@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>wheat</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.12.0/lib/theme-chalk/index.css">
+</head>
+
+<style>
+    .el-header {
+        background-color: #B3C0D1;
+        color: #333;
+        line-height: 60px;
+    }
+    .el-aside {
+        color: #333;
+    }
+</style>
+
+<body style="font-family:Microsoft YaHei; color:#303133">
+<div id="app">
+    <el-container style="border: 1px solid #eee">
+        <el-header style="text-align: right; font-size: 20px; color: #ffffff; ">wheat</el-header>
+        <el-container>
+            <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+                <el-menu default-openeds="['1','2']" default-active="1-2" @item-click="item-click">
+                    <el-submenu index="1">
+                        <template slot="title"><i class="el-icon-bangzhu"></i>fydt</template>
+                        <!--<el-menu-item index="1-1"><i class="el-icon-caret-right"></i>原网址</el-menu-item>-->
+                        <el-menu-item index="1-2"><i class="el-icon-caret-right"></i>下载资源</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="2">
+                        <template slot="title"><i class="el-icon-document-copy"></i>加解密</template>
+                        <el-menu-item index="2-1"><i class="el-icon-caret-right"></i>加密</el-menu-item>
+                        <el-menu-item index="2-1"><i class="el-icon-caret-right"></i>解密</el-menu-item>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+            <el-main style="padding-top: 40px;padding-left:40px;padding-right:100px;">
+                <el-row style="margin-bottom: 40px;">
+                    访问原网址：<el-link href="https://www.fydt.org" target="_blank">https://www.fydt.org</el-link>
+                </el-row>
+                <el-divider content-position="left">下载资源</el-divider>
+
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-bottom: 40px;">
+                    <el-form-item label="保存" prop="save">
+                        <el-input v-model="ruleForm.save" placeholder="请复制文件夹地址在这里。例如：E:\fydt"></el-input>
+                    </el-form-item>
+                    <el-form-item label="目录" prop="catalogues">
+                        <el-checkbox-group v-model="ruleForm.catalogues">
+                            <el-checkbox label="书卷考查" name="type"></el-checkbox>
+                            <el-checkbox label="专题系列" name="type"></el-checkbox>
+                            <el-checkbox label="讲道信息" name="type"></el-checkbox>
+                            <el-checkbox label="圣经一神论" name="type"></el-checkbox>
+                            <el-checkbox label="生命再思" name="type"></el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="操作" prop="type">
+                        <el-radio-group v-model="ruleForm.type">
+                            <el-radio label="查看"></el-radio>
+                            <el-radio label="更新"></el-radio>
+                            <el-radio label="重新下载"></el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="格式" prop="formats">
+                        <el-checkbox-group v-model="ruleForm.formats">
+                            <el-checkbox label="文档" name="type"></el-checkbox>
+                            <el-checkbox label="音频" name="type"></el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm('ruleForm')">运行</el-button>
+                        <el-button @click="resetForm('ruleForm')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+                <el-divider content-position="left">显示结果</el-divider>
+                <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 1000}" style="padding-left: 40px;"></el-input>
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+</body>
+
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.12.0/lib/index.js"></script>
+<script>
+    let main = Vue.extend({
+        data(){
+            return {
+                ruleForm: {
+                    save: '',
+                    catalogues: ["书卷考查","专题系列","讲道信息","圣经一神论","生命再思"],
+                    formats: ["文档","音频"],
+                    type: '更新'
+                },
+                rules: {
+                    save: [
+                        { required: true, message: '请填写资源保存的文件夹地址', trigger: 'blur' }
+                    ],
+                    catalogues: [
+                        { type: 'array', required: true, message: '请至少选择一个目录', trigger: 'change' }
+                    ],
+                    type: [
+                        { required: true, message: '请选择操作类型', trigger: 'change' }
+                    ],
+                    formats: [
+                        { type: 'array', required: true, message: '请至少选择一种文件类型', trigger: 'change' }
+                    ]
+                }
+            }
+        },
+        methods: {
+            fydtUrl(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleClose(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            onSubmit() {
+                console.log('submit!');
+            },
+            submitForm(formName) {
+                this.$refs[formName].validate(function (valid) {
+                    if (valid) {
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            }
+        }
+    });
+    new main().$mount('#app');
+</script>
+</html>
