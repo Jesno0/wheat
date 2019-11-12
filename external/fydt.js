@@ -13,7 +13,7 @@ class cls extends Base {
 }
 
 cls.prototype.getResourcePage = async function (url) {
-    let html = await this.get(url),infos = [];
+    let html = await this.get(url,null,'html'),infos = [];
 
     if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
     html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
@@ -43,7 +43,7 @@ cls.prototype.getResourcePage = async function (url) {
 };
 
 cls.prototype.getSecondCatalogue = async function (url) {
-    let html = await this.get(url),infos = [];
+    let html = await this.get(url,null,'html'),back = [];
 
     if(html.indexOf('<div') > -1) html = html.split('<div class="item-list">')[1].split('</div>')[0];
     html.replace('<ul>','').replace('</ul>','')
@@ -51,8 +51,10 @@ cls.prototype.getSecondCatalogue = async function (url) {
         .split('="/cat/')
         .map(tr => {
             if(!tr) return;
-            infos.push(tr.split('">'));
+            back.push(tr.split('">'));
         });
 
-    return infos;
+    return back;
 };
+
+module.exports = new cls();

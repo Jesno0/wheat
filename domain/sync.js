@@ -2,7 +2,6 @@
 
 const Request = require('request');
 const Fs = require('fs');
-const Err = require('./error');
 
 const host = 'https://fuyindiantai.org/cat/';
 const catalogues = [['shujuanchakao','书卷考查'],['zhuantixilie','专题系列'],['jiangdaoxinxi','讲道信息']];
@@ -10,7 +9,7 @@ const no_second_catalogues = [['shengjingyishenlun','圣经一神论'],['shengmi
 //const save_host = 'F:/1_back/mine/OneDrive/bible/preach/self/';
 const save_host = 'F:/1_back/mine/fydt/';
 
-let type = down;//down,rename,check
+let type = check;//down,rename,check
 const is_mp3 = 2;//0:不检测；1：检测；2：当没有其他资源时才检测
 const catalogues_index = 3;//其中一个目录。0为全部。
 const second_catalogue = 'xunqiushendezhengquetujing';//二级目录id（名字拼音）
@@ -123,7 +122,7 @@ async function down(infos,save_path) {
                     resolve();
                 });
         }).catch(err => {
-            Err.log('DOWN',res[0],res[1]);
+            //Err.log('DOWN',res[0],res[1]);
             return Promise.resolve();
             //File.unlinkSync(new_name);
         });

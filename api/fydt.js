@@ -4,8 +4,8 @@
  *
  */
 
-const Base = require('./base');
-import Fydt from '../domain/fydt';
+const Base = require('koa2frame').api,
+    Fydt = require('../domain/fydt');
 
 class cls extends Base{
     constructor () {
@@ -14,12 +14,33 @@ class cls extends Base{
 }
 
 cls.prototype.sync = async function (ctx) {
-    return Fydt.sync(ctx.query);
+    let body = ctx.body,
+        paths = await Fydt.getPaths(body.catalogues),
+        save_path = body.save,
+        formats = body.formats,
+        type = body.type;
+
+    if(save_path.slice(save_path.length-1) == '/') save_path = save_path.slice(0,save_path.length-1);
+    let list = (await Promise.all(paths.map(async path => {
+        return await Fydt.check(path[0],`${save_path}${path[1]}`,formats,type=='reload');
+    }))).reduce((a,b) => {
+        return a.concat(b);
+    });
+
+    switch (type) {
+        case 'check':
+            return list.map(item => {
+                return item.slice(0,2);
+            });
+        case 'reload':
+        case 'update':
+            return Fydt.update(list);
+    }
 };
-cls.prototype.index.settings = {
+cls.prototype.sync.settings = {
     params: {
         is_filter: true,
-        query: {
+        body: {
             "type": "object",
             "properties": {
                 "save": {

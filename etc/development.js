@@ -3,7 +3,7 @@
 module.exports = {
     http : {
         port : 3003,
-        timeout: 5000
+        timeout: 10000
     },
 
     log: {
