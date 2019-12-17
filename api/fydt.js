@@ -5,7 +5,8 @@
  */
 
 const Base = require('koa2frame').api,
-    Fydt = require('../domain/fydt');
+    Fydt = require('../domain/fydt'),
+    FydtExt = require('../external/fydt');
 
 class cls extends Base{
     constructor () {
@@ -15,23 +16,30 @@ class cls extends Base{
 
 cls.prototype.sync = async function (ctx) {
     let body = ctx.body,
-        paths = await Fydt.getPaths(body.catalogues),
+        cats = await Fydt.getResourceList(body.catalogues),
         save_path = body.save,
         formats = body.formats,
-        type = body.type;
+        type = body.type,
+        i, resources, save,
+        list = [];
 
-    if(save_path.slice(save_path.length-1) == '/') save_path = save_path.slice(0,save_path.length-1);
-    let list = (await Promise.all(paths.map(async path => {
-        return await Fydt.check(path[0],`${save_path}${path[1]}`,formats,type=='reload');
-    }))).reduce((a,b) => {
-        return a.concat(b);
-    });
+    if(save_path.slice(save_path.length-1) == '/')
+        save_path = save_path.slice(0,save_path.length-1);
+
+    for(i=0; i<cats.length; i++) {
+        resources = cats[i].resources;
+        save = `${save_path}${cats[i].save}`;
+        list = list.concat(await Fydt.check(resources,save,formats,type=='reload'));
+    }
 
     switch (type) {
         case 'check':
-            return list.map(item => {
-                return item.slice(0,2);
-            });
+            return {
+                total: list.length,
+                rows: list.map(item => {
+                    return item.slice(0,2);
+                })
+            };
         case 'reload':
         case 'update':
             return Fydt.update(list);
@@ -48,10 +56,9 @@ cls.prototype.sync.settings = {
                 },
                 "catalogues": {
                     "type": "array",
-                    "item": {
+                    "items": {
                         "type": "string",
-                        "enum": ["shujuanchakao","zhuantixilie","jiangdaoxinxi","shengjingyishenlun","shengmingzaisi"]
-                        //书卷考查,专题系列,讲道信息,圣经一神论,生命再思
+                        "enum": Object.keys(FydtExt.catalogues)
                     }
                 },
                 "type": {
@@ -60,7 +67,7 @@ cls.prototype.sync.settings = {
                 },
                 "formats": {
                     "type": "array",
-                    "item": {
+                    "items": {
                         "type": "string",
                         "enum": ["audio","doc"]
                     }

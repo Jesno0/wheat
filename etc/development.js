@@ -18,7 +18,7 @@ module.exports = {
 
     external: {
         fydt: {
-            url: 'https://fuyindiantai.org'
+            url: 'https://www.fydt.org'//fuyindiantai.org
         }
     }
 };

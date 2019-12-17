@@ -8,14 +8,10 @@ const Request = require('request'),
     Fs = require('fs'),
     Frame = require('koa2frame'),
     Err = Frame.error,
-    Ut = Frame.utils,
     Fydt = require('../external/fydt');
 
 class cls {
     constructor () {
-        this.catalogues = ["shujuanchakao","zhuantixilie","jiangdaoxinxi","shengjingyishenlun","shengmingzaisi"];
-        this.catalogues_name = ["书卷考查","专题系列","讲道信息","圣经一神论","生命再思"];
-        //todo:通过网页获取
     }
 }
 
@@ -29,7 +25,6 @@ cls.prototype.update = async function (check_list) {
             new_name = res[1];
 
         await new Promise((resolve,reject) => {
-            console.log(res[1]);
             Request(res[0]).pipe(Fs.createWriteStream(new_name))
                 .on('error', function (err) {return reject();})
                 .on('close', function (err) {
@@ -45,11 +40,11 @@ cls.prototype.update = async function (check_list) {
     }
 };
 
-cls.prototype.check = async function (url,save_path,formats,reload) {
-    let back = [],list = await Fydt.getResourcePage(url);
+cls.prototype.check = function (resource_info,save_path,formats,reload) {
+    let back = [];
 
-    for(let i=1; i<list.length; i++) {
-        let info = list[i];
+    for(let i=0; i<resource_info.length; i++) {
+        let info = resource_info[i];
         for (let j = 1; j < info.length; j++) {
             let res = info[j],
                 old_name_full = res[0],
@@ -59,9 +54,14 @@ cls.prototype.check = async function (url,save_path,formats,reload) {
             if (formats.indexOf(type) < 0) continue;
 
             let new_name = info[0],
-                title = new_name.slice(0, new_name.lastIndexOf('-')),
-                auth = new_name.slice(new_name.lastIndexOf('-') + 1),
+                auth_index = new_name.lastIndexOf('-'),
+                title = (auth_index>-1) ? new_name.slice(0, auth_index) : new_name,
+                auth = (auth_index>-1) ? '-'+new_name.slice(auth_index + 1) : '',
                 version = '';
+
+            [':','\\\\','\/','\\?','\\*','\\"','<','>','\\|'].map(reg => {
+                title = title.replace(new RegExp(reg,'g'),'_');
+            });
 
             switch (type) {
                 case 'doc':
@@ -72,12 +72,16 @@ cls.prototype.check = async function (url,save_path,formats,reload) {
                     let lst_letter = old_name_full.slice(old_name_index - 1, old_name_index),
                         sec_lst_code = old_name_full.charCodeAt(old_name_index - 2),
                         lst_code = old_name_full.charCodeAt(old_name_index - 1);
-                    if ((lst_code > 96) && (lst_code < 123) && (sec_lst_code < 97 || sec_lst_code > 122)) title += lst_letter;
+                    if((lst_code > 96)
+                        && (lst_code < 123)
+                        && (sec_lst_code <97 || sec_lst_code> 122)
+                        && back.find(item => {return item[1].indexOf(title+'-') > -1})
+                    ) title += lst_letter;
                     break;
             }
 
             if(!Fs.existsSync(save_path)) Fs.mkdirSync(save_path);
-            let new_path = `${save_path}/${title}${version}-${auth}${ext}`;
+            let new_path = `${save_path}/${title}${version}${auth}${ext}`;
             if (reload || !Fs.existsSync(new_path)) back.push([res[1], new_path, old_name_full]);
         }
     }
@@ -86,21 +90,76 @@ cls.prototype.check = async function (url,save_path,formats,reload) {
     return back;
 };
 
-cls.prototype.getPaths = async function (catalogues) {
-    return Ut.noRepeat(await Promise.all(catalogues.map(async cat => {
-        let index = this.catalogues.indexOf(cat);
-        if(index < 0) return;
+cls.prototype.getResourceList = async function (catalogues) {
+    let i,name,cat,back = [];
+    for(i=0; i< catalogues.length; i++) {
+        name = catalogues[i];
+        cat = Fydt.catalogues[name];
+        let type_info = Object.assign({name}, cat);
+        if (type_info) back = back.concat(await circle(type_info));
+    }
+    return back;
 
-        let url = `/cat/${cat}`,
-            save = `/${this.catalogues_name[this.catalogues.indexOf(cat)]}`;
-        if(index < 3) {
-            (await Fydt.getSecondCatalogue(`/cat/${cat}`)).map(info => {
-                url += `/${info[0]}`;
-                save += `/${info[1]}`;
-            });
+    async function circle (type_info,save) {
+        let urls = type_info.url;
+        if(!urls) return;
+        if(urls.constructor != Array) urls = [urls];
+
+        let name = type_info.name;
+        save = save || '';
+        if(name) save += `/${name}`;
+
+        let type = type_info.type,
+            resources = [],
+            i, j, url, infos, info;
+
+        switch (type) {
+            case Fydt.types.catalogue:
+                if(!type_info.children) break;
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    for (j = 0; j < infos.length; j++) {
+                        info = infos[j];
+                        let children = await circle(Object.assign({
+                            url: info[0],
+                            name: info[1]
+                        }, type_info.children), save);
+                        resources = resources.concat(children);
+                    }
+                }
+                return resources;
+            case Fydt.types.resource_list:
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    resources = resources.concat(infos);
+                }
+                return [{save,resources}];
+            case Fydt.types.music_catalogue:
+                if(!type_info.children) return [];
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    for (j = 0; j < infos.length; j++) {
+                        info = infos[j];
+                        let children = await circle(Object.assign({
+                            url: info[0],
+                            name: info[1]
+                        }, type_info.children), save);
+                        resources = resources.concat(children[0].resources);
+                    }
+                }
+                return [{save,resources}];
+            case Fydt.types.resource_detail:
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    resources.push([name].concat(infos));
+                }
+                return [{save,resources}];
         }
-        return [url,save];
-    })));
+    }
 };
 
 cls.prototype.getType = function (ext) {
