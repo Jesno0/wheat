@@ -4,40 +4,25 @@
  *
  */
 
-const Request = require('request'),
-    Fs = require('fs'),
-    Frame = require('koa2frame'),
-    Err = Frame.error,
+const Fs = require('fs'),
+    Queue = require('./queue'),
     Fydt = require('../external/fydt');
 
 class cls {
-    constructor () {
-    }
+    constructor () {}
 }
 
-cls.prototype.update = async function (check_list) {
-    //check_list = check_list.slice(0,2);
+cls.prototype.async = async function (check_list) {
     let len = check_list.length;
     if(!len) return;
 
-    while (check_list.length) {
-        let res = check_list.shift(),
-            new_name = res[1];
-
-        await new Promise((resolve,reject) => {
-            Request(res[0]).pipe(Fs.createWriteStream(new_name))
-                .on('error', function (err) {return reject();})
-                .on('close', function (err) {
-                    if (err) return reject();
-                    console.info(`#DOWN[${len-check_list.length}]: ${Fs.statSync(new_name).size}`);
-                    resolve();
-                });
-        }).catch(err => {
-            Err.log(Err.error_log_type.http,res[0],res[1],err);
-            return Promise.resolve();
-            //File.unlinkSync(new_name);
-        });
-    }
+    await Queue.create(check_list.map(item => {
+        return {
+            id: item[1],
+            url: item[0]
+        }
+    }));
+    Queue.start();
 };
 
 cls.prototype.check = function (resource_info,save_path,formats,reload) {
@@ -63,26 +48,20 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
                 title = title.replace(new RegExp(reg,'g'),'_');
             });
 
-            switch (type) {
-                case 'doc':
-                    if ((title.indexOf('_mobile') > -1) && (info.length > 3)) continue;
-                    if ((old_name_full.indexOf('_eng.') > -1) || (old_name_full.indexOf('_e.') > -1)) version = '_eng';
-                    break;
-                case 'audio':
-                    let lst_letter = old_name_full.slice(old_name_index - 1, old_name_index),
-                        sec_lst_code = old_name_full.charCodeAt(old_name_index - 2),
-                        lst_code = old_name_full.charCodeAt(old_name_index - 1);
-                    if((lst_code > 96)
-                        && (lst_code < 123)
-                        && (sec_lst_code <97 || sec_lst_code> 122)
-                        && back.find(item => {return item[1].indexOf(title+'-') > -1})
-                    ) title += lst_letter;
-                    break;
+            if(type == 'doc') {
+                if ((title.indexOf('_mobile') > -1) && (info.length > 3)) continue;
+                if ((old_name_full.indexOf('_eng.') > -1) || (old_name_full.indexOf('_e.') > -1)) version = '_eng';
             }
+            while(back.find(item => {
+                return item[1].indexOf(`${title}${version}${auth}${ext}`) > -1;
+            })) version += old_name_full.slice(old_name_index - 1, old_name_index);
 
             if(!Fs.existsSync(save_path)) Fs.mkdirSync(save_path);
             let new_path = `${save_path}/${title}${version}${auth}${ext}`;
-            if (reload || !Fs.existsSync(new_path)) back.push([res[1], new_path, old_name_full]);
+            if (reload
+                || !Fs.existsSync(new_path)
+                || (Fs.statSync(new_path).size <1)
+            ) back.push([res[1], new_path, old_name_full]);
         }
     }
 
@@ -169,8 +148,16 @@ cls.prototype.getType = function (ext) {
         case 'wav':
         case 'avi':
             return 'audio';
-        default:
+        case 'mp4':
+            return 'video';
+        case 'doc':
+        case 'docx':
+        case 'xls':
+        case 'xlsx':
+        case 'pdf':
             return 'doc';
+        default:
+            return 'undefined';
     }
 };
 

@@ -8,8 +8,8 @@ module.exports = {
 
     log: {
         route: true,
-        db: false,
-        external: false,
+        db: true,
+        external: true,
         error: {
             console: true,
             storage: 'file'

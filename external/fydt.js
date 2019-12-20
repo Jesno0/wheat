@@ -5,6 +5,8 @@
  */
 
 const Frame = require('koa2frame'),
+    Err = Frame.error,
+    Request = require('request'),
     Path = require('path'),
     Fs = require('fs'),
     Ut = Frame.utils,
@@ -74,8 +76,8 @@ class cls extends Base {
             }
         };
 
-        for(let i=97;i<123;i++) {//123
-            this.catalogues.诗歌.url.push(`/songs/pinyin/${String.fromCharCode(i).toUpperCase()}`)
+        for(let i=65;i<91;i++) {//65,91
+            this.catalogues.诗歌.url.push(`/songs/pinyin/${String.fromCharCode(i)}`)
         }
     }
 
@@ -180,6 +182,29 @@ cls.prototype.resource_detail = async function (url) {
     //    [ 'S03_010.doc',
     //        'https://fuyindiantai.org/system/files_force/ge-lyrics/S03_010.doc?download=1' ]
     //]
+};
+
+cls.prototype.downResource = function (url,save) {
+    if(url.indexOf(this.server) != 0) url = this.server+url;
+
+    if(this.is_log) console.log(`【PIPE】: ${save} ${url}`);
+    return new Promise((resolve,reject) => {
+        Request(url)
+            .on('data', thuck => {if(this.is_log) console.log('req data',thuck)})
+            .on('close', err => {console.log('req close')})
+            .on('error', err => {return reject(err);})
+            .pipe(Fs.createWriteStream(save)
+                .on('error', err => {return reject(err);})
+                .on('close', err => {
+                    if (err) return reject(err);
+                    if(this.is_log && Fs.existsSync(save)) console.log(`【EXTERNAL BACK】: ${save} ${Fs.statSync(save).size}`);
+                    return resolve();
+                }));
+    }).catch(err => {
+        Err.log(Err.error_log_type.http,url,save,err);
+        if(Fs.existsSync(save)) Fs.unlinkSync(save);
+        return Promise.reject(err);
+    });
 };
 
 module.exports = new cls();

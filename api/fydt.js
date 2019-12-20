@@ -6,6 +6,7 @@
 
 const Base = require('koa2frame').api,
     Fydt = require('../domain/fydt'),
+    Queue = require('../domain/queue'),
     FydtExt = require('../external/fydt');
 
 class cls extends Base{
@@ -42,7 +43,7 @@ cls.prototype.sync = async function (ctx) {
             };
         case 'reload':
         case 'update':
-            return Fydt.update(list);
+            return Fydt.async(list);
     }
 };
 cls.prototype.sync.settings = {
@@ -76,6 +77,16 @@ cls.prototype.sync.settings = {
             "required":["type","save","catalogues","formats"]
         }
     }
+};
+
+cls.prototype.taskList = async function () {
+    return Object.assign({
+        status: Queue.status
+    },await Queue.list({}));
+};
+
+cls.prototype.stopTask = function () {
+    return Queue.remove({});
 };
 
 module.exports = new cls();
