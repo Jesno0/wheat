@@ -125,11 +125,11 @@ cls.prototype.resource_list = async function (url) {
             let trr = tr.split('</td>');
             trr.shift();
             trr.pop();
-            infos.push([
-                trr[0].split('</a>')[0].split('>').slice(-1)[0].replace('?','？').replace(/(^\s*)|(\s*$)/g, '')
-                + `-${trr[1].replace(/ /g, '').split('\n').slice(-1)}`
-            ]);
-            trr.slice(2).map(res => {
+            let name = trr[0].split('</a>')[0].split('>').slice(-1)[0].replace('?','？').replace(/(^\s*)|(\s*$)/g, ''),
+                is_auth = trr[1].indexOf('author') > -1,
+                auth = is_auth ? `-${trr[1].replace(/ /g, '').split('\n').slice(-1)}` : '';
+            infos.push([name+auth]);
+            trr.slice(is_auth?2:1).map(res => {
                 let href_arr = res.split('href="');
                 if(href_arr.length < 2) return;
                 href_arr.map((item,i) => {
@@ -252,8 +252,8 @@ cls.prototype.downResource = async function (url,save) {
     if(this.is_log) console.log(`【PIPE】: ${save} ${url}`);
     return new Promise((resolve,reject) => {
         Request(url)
-            .on('data', thuck => {if(this.is_log) console.log('req data',thuck)})
-            .on('close', err => {console.log('req close')})
+            //.on('data', thuck => {if(this.is_log) console.log('req data',thuck)})
+            //.on('close', err => {console.log('req close')})
             .on('error', err => {return reject(err);})
             .pipe(Fs.createWriteStream(save)
                 .on('error', err => {return reject(err);})
