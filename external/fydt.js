@@ -21,9 +21,10 @@ class cls extends Base {
             resource_list: 'resource_list',
             music_catalogue: 'music_catalogue',
             resource_detail: 'resource_detail',
-            fqa_list: 'fqa_list',
-            fqa_second_list: 'fqa_second_list',
-            fqa_detail: 'fqa_detail',
+            faq_catalogue: 'faq_catalogue',
+            faq_list: 'faq_list',
+            faq_detail: 'faq_detail',
+            book_catalogue: 'book_catalogue',
             book_list: 'book_list'
         };
 
@@ -56,17 +57,20 @@ class cls extends Base {
                 type: this.types.resource_list,
                 url: '/cat/shengmingzaisi'
             },"专题解答": {
-                type: this.types.fqa_list,
+                type: this.types.faq_catalogue,
                 url: '/faq',
                 children: {
-                    type: this.types.fqa_second_list,
+                    type: this.types.faq_list,
                     children: {
-                        type: this.types.fqa_detail
+                        type: this.types.faq_detail
                     }
                 }
             },"书籍推介": {
-                type: this.types.book_list,
-                url: '/shu'
+                type: this.types.book_catalogue,
+                url: '/shu',
+                children: {
+                    type: this.types.book_list
+                }
             },"诗歌": {
                 type: this.types.music_catalogue,
                 url: [],
@@ -184,7 +188,65 @@ cls.prototype.resource_detail = async function (url) {
     //]
 };
 
-cls.prototype.downResource = function (url,save) {
+cls.prototype.book_catalogue = async function (url) {
+    let html = await this.getHtml(url).catch(() => {});
+    if(!html) return [];
+
+    let arr = html.split('views-fluid-grid-list')[1].split('tbody')[0].split('</li>');
+    arr.pop();
+    let blank_list = arr.map(item => {
+        return [null,item.split('<h6')[1].split('</a>')[0].split('<a')[1].split('>')[1]];
+    });
+
+    arr = html.split('<tbody>')[1].split('</tbody>')[0].split('</tr>');
+    arr.pop();
+    let catalogue_list = arr.map(item => {
+        return item.split('</a>')[0].split('href="')[1].split('">');
+    });
+
+    return catalogue_list.concat(blank_list);
+
+    //[
+    //    [ '/content/duyidewanquanren', '独一的完全人' ],
+    //    [ null, '回转变成小孩子' ]
+    //]
+};
+
+cls.prototype.book_list = async function (url) {
+    let html = await this.getHtml(url).catch(() => {});
+    if(!html || html.indexOf('tbody') < 0) return [];
+
+    let auth = html.split('field-item even">')[1].split('<')[0];
+    let arr = html.split('tbody')[1].split('</tr>');
+    arr.pop();
+    return arr.map(item => {
+        let str = item.split('href="')[1],
+            path = str.split('"')[0],
+            name = str.split('>')[1].split('<')[0],
+            title = str.split('<td')[1].split('>')[1].split('</td')[0];
+
+        return [
+            `${title}-${auth}`,[name,path]
+        ]
+    });
+
+    //[
+    //    [ '独一的完全人(英文第二版更新版) - 适用于一般较大电脑荧幕',
+    //        [ 'TOPM_2.2_LgPt.pdf',
+    //            'https://www.fydt.org/sites/default/files/book/ebooks/TOPM_2.2_LgPt_1.pdf' ]
+    //    ],
+    //    ['独一的完全人(简体版)',
+    //        [ 'TOPM_sc_v2.pdf',
+    //            'https://www.fydt.org/sites/default/files/book/ebooks/TOPM_sc_v2_1.pdf' ]
+    //    ],
+    //    ['独一的完全人(繁体版)',
+    //        [ 'TOPM_tc_v2.pdf',
+    //            'https://www.fydt.org/sites/default/files/book/ebooks/TOPM_tc_v2_0.pdf' ]
+    //    ]
+    //]
+};
+
+cls.prototype.downResource = async function (url,save) {
     if(url.indexOf(this.server) != 0) url = this.server+url;
 
     if(this.is_log) console.log(`【PIPE】: ${save} ${url}`);
@@ -205,6 +267,60 @@ cls.prototype.downResource = function (url,save) {
         if(Fs.existsSync(save)) Fs.unlinkSync(save);
         return Promise.reject(err);
     });
+};
+
+cls.prototype.faq_catalogue = async function (url) {
+    let html = await this.getHtml(url).catch(() => {});
+    if(!html) return [];
+
+    let arr = html.split('item-list')[1].split('</ul>')[0].split('<li class="">');
+    arr.shift();
+    return arr.map(item => {
+        return item.split('href="')[1].split('</a>')[0].split('">');
+    });
+
+    //[
+    //    [ '/faq/yibanshenghuo', '一般生活' ],
+    //    [ '/faq/gongzuo', '工作' ]
+    //]
+};
+
+cls.prototype.faq_list = async function (url) {
+    let html = await this.getHtml(url).catch(() => {});
+    if(!html) return [];
+
+    let arr = html.split('class="node-title"');
+    arr.shift();
+    return arr.map(item => {
+        return item.split('href="')[1].split('</a>')[0].split('">');
+    });
+
+    //[
+    //    [ '/laixin/xinlixiangxinkoulichengrenshengmingquemeiyougaibia',
+    //        '心里相信口里承认生命却没有改变能得救吗？/吃好点穿好点还是苦点好？' ],
+    //    [ '/laixin/danxinshouxihousadangongjizijisuoaidejiarenjidutus',
+    //    '担心受洗后撒但攻击自己所爱的家人/基督徒是否可以买保险？' ]
+    //]
+};
+
+cls.prototype.faq_detail = async function (url) {
+    let html = await this.getHtml(url).catch(() => {});
+    if(!html) return [];
+
+    let title = html.split('page-title">')[1].split('<')[0];
+    return [
+        `${title}.txt`,
+        `${title}\n\n问:\n`
+            + html.split('class="pane-content"').slice(1,3).map(item => {
+                let str = item.split('</span>')[0];
+                return str.slice(str.lastIndexOf('>')+1);
+            }).join('\n\n答:\n')
+    ];
+
+    //[
+    //    '（太15：11），“入口的不能污秽人”，是否表示可以随便乱吃东西？ .txt',
+    //    '（太15：11），“入口的不能污秽人”，是否表示可以随便乱吃东西？ \n\n问:\n主耶稣说：“入口的不能污秽人，出口的才能污秽人”，于是有个弟兄把大小便倒在身上，说这个不能污秽他，他又乱吃东西，把地上的痰检来吃了，最后痛苦的死了，有个弟兄说他是邪灵附体，有什么证据呢？就因为他做事与常人不和就是邪灵附体吗？\n\n答:\n那弟兄乱吃东西，还用圣经来支持自己的做法，他这样做只是滥用圣经，歪曲圣经的意思，最后只好自己受害。至于是什么原因导致他这样做，我们就不得而知了。有可能他精神出了问题，导致他行为失常……'
+    //]
 };
 
 module.exports = new cls();

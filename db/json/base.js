@@ -101,7 +101,7 @@ cls.prototype.remove = async function (condition) {
 
 cls.prototype.update = async function (condition,opts) {
     await this.model(opts);
-    let files = this.find(condition).map(file => {
+    let files = this.find(condition,null,{origin:true}).map(file => {
         Object.keys(opts).map(k => {
             file[k] = opts[k];
         });
@@ -113,7 +113,7 @@ cls.prototype.update = async function (condition,opts) {
 
 cls.prototype.find = function (condition,field,options) {
     let files = Ut.noRepeat(this.db.map(opts => {
-        opts = Object.assign({},opts);
+        if(!options || !options.origin) opts = Object.assign({},opts);
 
         let flag = true;
         if(condition.constructor == Object && Object.keys(condition).length) {

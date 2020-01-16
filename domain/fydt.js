@@ -137,6 +137,68 @@ cls.prototype.getResourceList = async function (catalogues) {
                     resources.push([name].concat(infos));
                 }
                 return [{save,resources}];
+            case Fydt.types.faq_catalogue:
+                if(!type_info.children) return [];
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    for (j = 0; j < infos.length; j++) {
+                        info = infos[j];
+                        if(!info[0]) continue;
+                        let children = await circle(Object.assign({
+                            url: info[0],
+                            name: info[1]
+                        }, type_info.children), save);
+                        resources = resources.concat(children[0].resources);
+                    }
+                }
+                return [{save,resources}];
+            case Fydt.types.faq_list:
+                if(!type_info.children) return [];
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    for (j = 0; j < infos.length; j++) {
+                        info = infos[j];
+                        if(!info[0]) continue;
+                        let children = await circle(Object.assign({
+                            url: info[0],
+                            name: info[1]
+                        }, type_info.children), save);
+                        resources = resources.concat(children[0].resources);
+                    }
+                }
+                return [{save,resources}];
+            case Fydt.types.faq_detail:
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    resources.push([name,infos]);
+                }
+                return [{save,resources}];
+            case Fydt.types.book_catalogue:
+                if(!type_info.children) return [];
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    for (j = 0; j < infos.length; j++) {
+                        info = infos[j];
+                        if(!info[0]) continue;
+                        let children = await circle(Object.assign({
+                            url: info[0],
+                            name: info[1]
+                        }, type_info.children), save);
+                        resources = resources.concat(children[0].resources);
+                    }
+                }
+                return [{save,resources}];
+            case Fydt.types.book_list:
+                for(i=0; i< urls.length; i++) {
+                    url = urls[i];
+                    infos = await Fydt[type](url);
+                    resources = resources.concat(infos);
+                }
+                return [{save,resources}];
         }
     }
 };
@@ -155,6 +217,7 @@ cls.prototype.getType = function (ext) {
         case 'xls':
         case 'xlsx':
         case 'pdf':
+        case 'txt':
             return 'doc';
         default:
             return 'undefined';
