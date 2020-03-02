@@ -5,7 +5,6 @@
  */
 
 const Frame = require('koa2frame'),
-    FydtExt = require('../external/fydt'),
     Fs = require('fs'),
     Err = Frame.error,
     Base = Frame.domain;
@@ -18,7 +17,7 @@ class cls extends Base{
     }
 }
 
-cls.prototype.start = async function () {
+cls.prototype.start = async function (ExtCls) {
     if(this.status) return;
     this.status = true;
 
@@ -26,7 +25,7 @@ cls.prototype.start = async function () {
     if(!info) return;
 
     if(info.url.indexOf('http') == 0)
-        await FydtExt.downResource(info.url,info.id).catch(err => {
+        await ExtCls.downResource(info.url,info.id).catch(err => {
             this.status = false;
             return Promise.reject(err);
         });
@@ -41,7 +40,7 @@ cls.prototype.start = async function () {
     if(!remove_num) return Err.log(Err.error_log_type.db,'fydt_queue删除失败，任务停止');
 
     let list_num = (await this.count({}));
-    if(list_num) await this.start();
+    if(list_num) await this.start(ExtCls);
 };
 
 cls.prototype.toFormat = function(model) {

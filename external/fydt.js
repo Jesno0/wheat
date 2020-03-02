@@ -5,12 +5,10 @@
  */
 
 const Frame = require('koa2frame'),
-    Err = Frame.error,
-    Request = require('request'),
     Path = require('path'),
     Fs = require('fs'),
     Ut = Frame.utils,
-    Base = Frame.external;
+    Base = require('./base');
 
 class cls extends Base {
     constructor () {
@@ -91,6 +89,11 @@ class cls extends Base {
         let html = await super.get(url, null, 'html');
         Fs.writeFileSync(file_path, html);
         return html;
+    }
+
+    async downResource (url,save) {
+        if(url.indexOf(this.server) != 0) url = this.server+url;
+        super.downResource(url,save);
     }
 }
 
@@ -244,29 +247,6 @@ cls.prototype.book_list = async function (url) {
     //            'https://www.fydt.org/sites/default/files/book/ebooks/TOPM_tc_v2_0.pdf' ]
     //    ]
     //]
-};
-
-cls.prototype.downResource = async function (url,save) {
-    if(url.indexOf(this.server) != 0) url = this.server+url;
-
-    if(this.is_log) console.log(`【PIPE】: ${save} ${url}`);
-    return new Promise((resolve,reject) => {
-        Request(url)
-            //.on('data', thuck => {if(this.is_log) console.log('req data',thuck)})
-            //.on('close', err => {console.log('req close')})
-            .on('error', err => {return reject(err);})
-            .pipe(Fs.createWriteStream(save)
-                .on('error', err => {return reject(err);})
-                .on('close', err => {
-                    if (err) return reject(err);
-                    if(this.is_log && Fs.existsSync(save)) console.log(`【EXTERNAL BACK】: ${save} ${Fs.statSync(save).size}`);
-                    return resolve();
-                }));
-    }).catch(err => {
-        Err.log(Err.error_log_type.http,url,save,err);
-        if(Fs.existsSync(save)) Fs.unlinkSync(save);
-        return Promise.reject(err);
-    });
 };
 
 cls.prototype.faq_catalogue = async function (url) {

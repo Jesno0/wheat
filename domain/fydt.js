@@ -22,7 +22,7 @@ cls.prototype.async = async function (check_list) {
             url: item[0]
         }
     }));
-    Queue.start();
+    Queue.start(Fydt);
 };
 
 cls.prototype.check = function (resource_info,save_path,formats,reload) {

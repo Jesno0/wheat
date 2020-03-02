@@ -19,6 +19,9 @@ module.exports = {
     external: {
         fydt: {
             url: 'https://www.fydt.org'//fuyindiantai.org
+        },
+        '520story': {
+            url: 'http://www.520tingshu.com'
         }
     }
 };
