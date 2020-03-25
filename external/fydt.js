@@ -91,9 +91,9 @@ class cls extends Base {
         return html;
     }
 
-    async downResource (url,save) {
+    downResource (url,save) {
         if(url.indexOf(this.server) != 0) url = this.server+url;
-        super.downResource(url,save);
+        return super.downResource(url,save);
     }
 }
 

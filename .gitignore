@@ -15,4 +15,4 @@ package-lock.json
 *.log
 .nyc_output
 /view/fydt/origin
-/db/json/fydt_queue.json
+/db/json/queue.json

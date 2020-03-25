@@ -6,6 +6,7 @@
 
 const Fs = require('fs'),
     Queue = require('./queue'),
+    Ut = require('../tool/utils'),
     Fydt = require('../external/fydt');
 
 class cls {
@@ -56,7 +57,7 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
                 return item[1].indexOf(`${title}${version}${auth}${ext}`) > -1;
             })) version += old_name_full.slice(old_name_index - 1, old_name_index);
 
-            if(!Fs.existsSync(save_path)) Fs.mkdirSync(save_path);
+            Ut.mkdirs(save_path);
             let new_path = `${save_path}/${title}${version}${auth}${ext}`;
             if (reload
                 || !Fs.existsSync(new_path)

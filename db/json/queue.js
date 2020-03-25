@@ -8,7 +8,7 @@ const Base = require('./base');
 
 class cls extends Base{
     constructor () {
-        super('fydt_queue',Array);
+        super('queue',Array);
     }
 
     async model (opts) {
@@ -23,10 +23,6 @@ class cls extends Base{
                     type: 'string',
                     minLength: 1
                 },
-                //save: {
-                //    type: 'string',
-                //    minLength: 1
-                //},
                 create_at: {
                     type: Date
                 }

@@ -4,16 +4,28 @@
  *
  */
 
-const Base = require('koa2frame').api,
+const Frame = require('koa2frame'),
+    Base = Frame.api,
+    Err = Frame.error,
     Fydt = require('../domain/fydt'),
-    Queue = require('../domain/queue'),
     FydtExt = require('../external/fydt');
 
 class cls extends Base{
     constructor () {
         super();
+        this.formats = {
+            doc: "文档",
+            audio: "音频"
+        };
+        this.types = {
+            check: "检测",
+            update: "下载更新",
+            reload: "重新下载"
+        }
     }
 }
+
+let instance = new cls();
 
 cls.prototype.sync = async function (ctx) {
     let body = ctx.body,
@@ -43,7 +55,8 @@ cls.prototype.sync = async function (ctx) {
             };
         case 'reload':
         case 'update':
-            return Fydt.async(list);
+            await Fydt.async(list);
+            return Err.get(Err.ok,null,'已成功添加任务，请查看任务列表。');
     }
 };
 cls.prototype.sync.settings = {
@@ -64,13 +77,13 @@ cls.prototype.sync.settings = {
                 },
                 "type": {
                     "type": "string",
-                    "enum": ["check","reload","update"]
+                    "enum": Object.keys(instance.types)
                 },
                 "formats": {
                     "type": "array",
                     "items": {
                         "type": "string",
-                        "enum": ["audio","doc"]
+                        "enum": Object.keys(instance.formats)
                     }
                 }
             },
@@ -79,14 +92,21 @@ cls.prototype.sync.settings = {
     }
 };
 
-cls.prototype.taskList = async function () {
-    return Object.assign({
-        status: Queue.status
-    },await Queue.list({}));
+cls.prototype.init = async function () {
+    return {
+        catalogues: Object.keys(FydtExt.catalogues),
+        formats: Object.keys(instance.formats).map(id => {
+            return {
+                id,
+                name: instance.formats[id]
+            }
+        }),
+        types: Object.keys(instance.types).map(id => {
+            return {
+                id,
+                name: instance.types[id]
+            }
+        })
+    }
 };
-
-cls.prototype.stopTask = function () {
-    return Queue.remove({});
-};
-
-module.exports = new cls();
+module.exports = instance;

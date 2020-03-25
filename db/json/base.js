@@ -87,7 +87,9 @@ cls.prototype.remove = async function (condition) {
         flag = true;
         file = this.db[i];
         Object.keys(condition).map(k => {
-            if(condition[k] != file[k]) flag = false;
+            if (condition[k].constructor == RegExp){
+                flag = file[k].match(condition[k]);
+            } else if(condition[k] != file[k]) flag = false;
         });
         if(flag) {
             this.db.splice(i,1);
@@ -118,7 +120,9 @@ cls.prototype.find = function (condition,field,options) {
         let flag = true;
         if(condition.constructor == Object && Object.keys(condition).length) {
             Object.keys(condition).map(k => {
-                if (condition[k] != opts[k]) flag = false;
+                if (condition[k] && condition[k].constructor == RegExp){
+                    flag = opts[k].match(condition[k]);
+                } else if (condition[k] != opts[k]) flag = false;
             });
         }
         if(!flag) return;

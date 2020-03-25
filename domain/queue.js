@@ -11,13 +11,22 @@ const Frame = require('koa2frame'),
 
 class cls extends Base{
     constructor() {
-        super('fydt_queue');
+        super('queue');
         this.DbFunc = this.DB;
         this.status = false;
     }
+
+    toCondition (opts) {
+        let condition = super.toCondition(opts);
+        if(condition._id) {
+            condition.id = condition._id;
+            delete condition._id;
+        }
+        return condition;
+    }
 }
 
-cls.prototype.start = async function (ExtCls) {
+cls.prototype.start = async function (ExternalCls) {
     if(this.status) return;
     this.status = true;
 
@@ -25,7 +34,7 @@ cls.prototype.start = async function (ExtCls) {
     if(!info) return;
 
     if(info.url.indexOf('http') == 0)
-        await ExtCls.downResource(info.url,info.id).catch(err => {
+        await ExternalCls.downResource(info.url,info.id).catch(err => {
             this.status = false;
             return Promise.reject(err);
         });
@@ -40,7 +49,7 @@ cls.prototype.start = async function (ExtCls) {
     if(!remove_num) return Err.log(Err.error_log_type.db,'fydt_queue删除失败，任务停止');
 
     let list_num = (await this.count({}));
-    if(list_num) await this.start(ExtCls);
+    if(list_num) await this.start(ExternalCls);
 };
 
 cls.prototype.toFormat = function(model) {

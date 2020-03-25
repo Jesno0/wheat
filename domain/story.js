@@ -26,14 +26,24 @@ cls.prototype.check520 = async function (url,save,reload) {
         let str = i+1;
         if (str < 10) str = '00' + str;
         else if (str < 100) str = '0' + str;
-        let id = save + info[0].replace(/第[0-9]*集/,str);
 
-        if (reload
-            || !Fs.existsSync(id)
-            || (Fs.statSync(id).size <1)
+        let path = save + info[0].split('_')[0] + '/';
+        Ut.mkdirs(path);
+
+        let id = info[0];
+        [':','\\\\','\/','\\?','\\*','\\"','<','>','\\|'].map(reg => {
+            id = id.replace(new RegExp(reg,'g'),'_');
+        });
+        id = path + id.replace(/第[0-9]*[集|章]/,str).replace(/第[一-十|四]*[集|章]/,str);
+        let id_mp3 = id.slice(0,id.lastIndexOf('.'))+'.mp3';
+
+        if (reload || (
+                (!Fs.existsSync(id) || (Fs.statSync(id).size <3000))
+                && (!Fs.existsSync(id_mp3) || (Fs.statSync(id_mp3).size <3000))
+            )
         ) back.push({
             id: id,
-            url: info[1]
+            url: encodeURI(unescape(info[1].replace(/\\/g, "%")))
         });
     });
 
