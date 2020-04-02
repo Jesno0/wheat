@@ -18,10 +18,24 @@ module.exports = {
 
     external: {
         fydt: {
-            url: 'https://www.fydt.org'//fuyindiantai.org
+            url: 'https://www.fydt.org',//fuyindiantai.org
+            cache: true
         },
         '520story': {
-            url: 'http://www.520tingshu.com'
+            url: 'http://www.520tingshu.com',
+            cache: false
+        },
+        aishen: {
+            url: 'https://www.aishen360.com',
+            cache: true
+        },
+        aishenFile: {
+            url: 'https://webapi.ctfile.com',
+            cache: true
+        },
+        baiduFile: {
+            url: 'https://wenku.baidu.com',
+            cache: true
         }
     }
 };

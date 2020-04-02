@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wheat</title>
+    <link rel="stylesheet" href="/view/css/common/element.css">
+</head>
+
+<style>
+    .body {
+        font-family: Microsoft YaHei;
+        color: #303133
+    }
+    .el-header {
+        background-color: #B3C0D1;
+        line-height: 60px;
+        text-align: right;
+        font-size: 20px;
+        color: #ffffff;
+    }
+    .el-aside {
+        color: #333;
+        background-color: rgb(238, 241, 246)
+    }
+    .el-main {
+        padding-left:40px;
+        padding-right:100px;
+    }
+    .el-form {
+        margin-bottom: 40px;
+    }
+</style>
+
+<body>
+<div id="app">
+    <el-container style="border: 1px solid #eee">
+        <el-header>Wheat</el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu>
+                    <el-menu-item index="1">
+                        <span slot="title"><i class="el-icon-bangzhu"></i>FYDT</span >
+                    </el-menu-item>
+                    <el-submenu index="2" disabled>
+                        <template slot="title"><i class="el-icon-mic"></i>故事</template>
+                        <el-menu-item index="2-1"><i class="el-icon-collection-tag "></i>520听书网</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="3" disabled>
+                        <template slot="title"><i class="el-icon-document-copy"></i>加解密</template>
+                        <el-menu-item index="3-1"><i class="el-icon-collection-tag "></i>加密</el-menu-item>
+                        <el-menu-item index="3-2"><i class="el-icon-collection-tag "></i>解密</el-menu-item>
+                    </el-submenu>
+                    <el-menu-item index="4" disabled>
+                        <span slot="title"><i class="el-icon-finished"></i>任务</span>
+                    </el-menu-item>
+                    <el-menu-item index="5">
+                        <span slot="title"><i class="el-icon-s-custom"></i>
+                            <el-link href="https://www.processon.com/view/link/5e7aedf9e4b08e4e243bb389" target="_blank">族谱</el-link>
+                        </span >
+                    </el-menu-item>
+                    <el-menu-item index="6">
+                        <span slot="title"><i class="el-icon-headset"></i>
+                            <el-link href="https://www.zanmeishi.com/" target="_blank">诗歌</el-link>
+                        </span >
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+
+            <el-main>
+                <el-divider content-position="left">访问原网址</el-divider>
+                <el-link style="margin-bottom: 40px;margin-left: 50px;" href="https://www.fydt.org" target="_blank">https://www.fydt.org</el-link>
+
+                <el-divider content-position="left">下载资源</el-divider>
+                <el-form name="orderform" :model="ruleForm" :rules="rules" ref="ruleForm"
+                         label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="保存" prop="save">
+                        <el-input v-model="ruleForm.save" placeholder="请复制文件夹地址在这里。例如：D:\\fydt资料"></el-input>
+                    </el-form-item>
+
+
+                    <el-form-item label="目录" prop="catalogues">
+                        <el-checkbox :indeterminate="cataloguesIsIndeterminate" v-model="cataloguesCheckAll" @change="handleCheckAllChange">全选</el-checkbox>
+                        <el-checkbox-group v-model="ruleForm.catalogues" @change="handleCheckedCitiesChange">
+                            <el-checkbox v-for="catalogue in catalogues" :label="catalogue" :key="catalogue">{{catalogue}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+
+
+                    <el-form-item label="操作" prop="type">
+                        <el-radio-group v-model="ruleForm.type">
+                            <el-radio v-for="type in types" :label="type.id" :key="type.id">{{type.name}}</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="格式" prop="formats">
+                        <el-checkbox-group v-model="ruleForm.formats">
+                            <el-checkbox v-for="format in formats" :label="format.id" :key="format.id">{{format.name}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm('ruleForm')">运行</el-button>
+                        <el-button @click="resetForm('ruleForm')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+                <el-divider content-position="left">显示结果</el-divider>
+                <el-input v-model="output" type="textarea" rows="12" style="padding-left: 40px;"></el-input>
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+</body>
+
+<script src="/view/js/common/jquery.js"></script>
+<script src="/view/js/common/vue.js"></script>
+<script src="/view/js/common/element.js"></script>
+<script>
+    $.get('/fydt/init', function(init_data) {
+        init_data = init_data.data;
+        let main = Vue.extend({
+            data(){
+                return {
+                    cataloguesCheckAll: true,
+                    cataloguesIsIndeterminate: false,
+                    catalogues: init_data.catalogues,
+                    formats: init_data.formats,
+                    types: init_data.types,
+                    output: '',
+                    save: '',
+                    ruleForm: {
+                        save: 'D:\\fydt资料',
+                        catalogues: init_data.catalogues,
+                        type: init_data.types[0].id,
+                        formats: init_data.formats.map(function(item) {return item.id})
+                    },
+                    rules: {
+                        save: [
+                            {required: true, message: '保存资源地址，不能空', trigger: 'blur'},
+                            {min: 3, message: '文件夹地址不正确', trigger: 'blur'}
+                        ],
+                        catalogues: [
+                            {type: 'array', required: true, message: '请至少选择一个目录', trigger: 'change'}
+                        ],
+                        type: [
+                            {required: true, message: '请选择操作类型', trigger: 'change'}
+                        ],
+                        formats: [
+                            {type: 'array', required: true, message: '请至少选择一种文件类型', trigger: 'change'}
+                        ]
+                    }
+                }
+            },
+            methods: {
+                submitForm(formName) {
+                    let _this = this;
+                    let form = this.$refs[formName];
+                    let output_str = '';
+                    form.validate(function (valid) {
+                        if (!valid) return false;
+                        write('开始...');
+                        $.post('/fydt/sync', Object(_this.ruleForm), function (result) {
+                            if(result.ok === 0) {
+                                write(result.msg);
+                                write(result.data);
+                            }else {
+                                write(result);
+                            }
+                        }).fail(function (err) {
+                            write(err);
+                        });
+                    });
+
+                    function write(param) {
+                        if (!param) return;
+                        switch (param.constructor) {
+                            case String:
+                                if (output_str) output_str += `\r\n`;
+                                output_str += param;
+                                _this.output = output_str;
+                                break;
+                            case Array:
+                                param.map(function (item) {
+                                    write(item);
+                                });
+                                break;
+                            case Object:
+                                write(JSON.stringify(param));
+                                break;
+                        }
+                    }
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                handleCheckAllChange(val) {
+                    this.ruleForm.catalogues = val ? init_data.catalogues : [];
+                    this.cataloguesIsIndeterminate = false;
+                },
+                handleCheckedCitiesChange(value) {
+                    let checkedCount = value.length;
+                    this.cataloguesCheckAll = checkedCount === this.catalogues.length;
+                    this.cataloguesIsIndeterminate = checkedCount > 0 && checkedCount < this.catalogues.length;
+                }
+            }
+        });
+        new main().$mount('#app');
+    });
+</script>
+</html>

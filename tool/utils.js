@@ -4,19 +4,26 @@
  *
  */
 
-const fs = require('fs');
-const path = require('path');
+const Fs = require('fs');
+const Path = require('path');
 
 class cls {
     constructor() {}
 }
 
 cls.prototype.mkdirs = function(dirpath) {
-    if(fs.existsSync(dirpath)) return;
-    if (!fs.existsSync(path.dirname(dirpath))) {
-        this.mkdirs(path.dirname(dirpath));
+    if(Fs.existsSync(dirpath)) return;
+    if (!Fs.existsSync(Path.dirname(dirpath))) {
+        this.mkdirs(Path.dirname(dirpath));
     }
-    fs.mkdirSync(dirpath);
+    Fs.mkdirSync(dirpath);
+};
+
+cls.prototype.fixFileName = function (title) {
+    [':','\\\\','\/','\\?','\\*','\\"','<','>','\\|'].map(reg => {
+        title = title.replace(new RegExp(reg,'g'),'_');
+    });
+    return title;
 };
 
 module.exports = new cls();

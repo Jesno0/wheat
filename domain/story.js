@@ -5,6 +5,7 @@
  */
 
 const Fs = require('fs'),
+    Ut = require('../tool/utils'),
     Queue = require('./queue'),
     Story = require('../external/520story');
 
@@ -28,12 +29,7 @@ cls.prototype.check520 = async function (url,save,reload) {
         else if (str < 100) str = '0' + str;
 
         let path = save + info[0].split('_')[0] + '/';
-        Ut.mkdirs(path);
-
-        let id = info[0];
-        [':','\\\\','\/','\\?','\\*','\\"','<','>','\\|'].map(reg => {
-            id = id.replace(new RegExp(reg,'g'),'_');
-        });
+        let id = Ut.fixFileName(info[0]);
         id = path + id.replace(/第[0-9]*[集|章]/,str).replace(/第[一-十|四]*[集|章]/,str);
         let id_mp3 = id.slice(0,id.lastIndexOf('.'))+'.mp3';
 

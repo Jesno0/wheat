@@ -40,7 +40,7 @@ cls.prototype.findOne = function () {
 };
 
 cls.prototype.removeOne = function () {
-    return this.remove({id:this.db[0].id});
+    if(this.db[0]) return this.remove({id:this.db[0].id});
 };
 
 module.exports = new cls();

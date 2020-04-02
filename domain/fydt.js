@@ -26,6 +26,21 @@ cls.prototype.async = async function (check_list) {
     Queue.start(Fydt);
 };
 
+/**
+ * 检测文件是否存在
+ * @param resource_info
+ * @param save_path
+ * @param formats
+ * @param reload
+ * @returns {Array}
+ * [
+     [
+        'https://www.fydt.org/sites/default/files/book/ebooks/Gdkn_testimony_updated.pdf',
+        'F:/1_back/mine/bible/书籍推介/一生一世必有恩惠慈爱与我同在-周慧贤.pdf',
+        'Gdkn_testimony_updated.pdf'
+    ]
+ ]
+ */
 cls.prototype.check = function (resource_info,save_path,formats,reload) {
     let back = [];
 
@@ -41,13 +56,9 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
 
             let new_name = info[0],
                 auth_index = new_name.lastIndexOf('-'),
-                title = (auth_index>-1) ? new_name.slice(0, auth_index) : new_name,
+                title = Ut.fixFileName((auth_index>-1) ? new_name.slice(0, auth_index) : new_name),
                 auth = (auth_index>-1) ? '-'+new_name.slice(auth_index + 1) : '',
                 version = '';
-
-            [':','\\\\','\/','\\?','\\*','\\"','<','>','\\|'].map(reg => {
-                title = title.replace(new RegExp(reg,'g'),'_');
-            });
 
             if(type == 'doc') {
                 if ((title.indexOf('_mobile') > -1) && (info.length > 3)) continue;
@@ -57,7 +68,6 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
                 return item[1].indexOf(`${title}${version}${auth}${ext}`) > -1;
             })) version += old_name_full.slice(old_name_index - 1, old_name_index);
 
-            Ut.mkdirs(save_path);
             let new_path = `${save_path}/${title}${version}${auth}${ext}`;
             if (reload
                 || !Fs.existsSync(new_path)
@@ -69,6 +79,19 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
     //console.info(`#CHECK: ${back.length} ${save_path}\n`,back);
     return back;
 };
+
+/**
+ *
+ * @param catalogues
+ * @returns {Array}
+ * [{
+    save: '/讲道信息/寻求神的正确途径',
+    resources: [
+        [ '寻求神的正确途径-李马可牧师',
+            [ 'wg01.mp3','https://www.fydt.org/system/files_force/sermon-mp3/wg01.mp3?download=1' ] ]
+    ]
+}]
+ */
 
 cls.prototype.getResourceList = async function (catalogues) {
     let i,name,cat,back = [];

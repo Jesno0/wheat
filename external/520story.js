@@ -13,7 +13,7 @@ class cls extends Base {
 
     async getHtml (url) {
         url = url.replace(this.server,'');
-        return await super.request('get', url, {encoding: 'gb2312'}, 'html');
+        return super.request('get', url, {encoding: 'gb2312'}, 'html');
     }
 }
 

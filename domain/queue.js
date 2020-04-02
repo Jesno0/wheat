@@ -6,6 +6,7 @@
 
 const Frame = require('koa2frame'),
     Fs = require('fs'),
+    ExternalCls = require('../external/base'),
     Err = Frame.error,
     Base = Frame.domain;
 
@@ -14,6 +15,7 @@ class cls extends Base{
         super('queue');
         this.DbFunc = this.DB;
         this.status = false;
+        this.stop = false;
     }
 
     toCondition (opts) {
@@ -26,9 +28,10 @@ class cls extends Base{
     }
 }
 
-cls.prototype.start = async function (ExternalCls) {
+cls.prototype.start = async function () {
     if(this.status) return;
     this.status = true;
+    this.stop = false;
 
     let info = this.DbFunc.findOne();
     if(!info) return;
@@ -48,8 +51,10 @@ cls.prototype.start = async function (ExternalCls) {
     let remove_num = (await this.DbFunc.removeOne()).n;
     if(!remove_num) return Err.log(Err.error_log_type.db,'fydt_queue删除失败，任务停止');
 
+    if(this.stop) return this.stop = false;
+
     let list_num = (await this.count({}));
-    if(list_num) await this.start(ExternalCls);
+    if(list_num) await this.start();
 };
 
 cls.prototype.toFormat = function(model) {

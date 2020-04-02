@@ -6,7 +6,6 @@
 
 const Frame = require('koa2frame'),
     Path = require('path'),
-    Fs = require('fs'),
     Ut = Frame.utils,
     Base = require('./base');
 
@@ -84,16 +83,7 @@ class cls extends Base {
     }
 
     async getHtml (url) {
-        let file_path = Path.resolve(__dirname, `../view/fydt/origin/${url.replace(/\//g, '_')}.html`);
-        if (Fs.existsSync(file_path)) return Fs.readFileSync(file_path,'utf-8');
-        let html = await super.get(url, null, 'html');
-        Fs.writeFileSync(file_path, html);
-        return html;
-    }
-
-    downResource (url,save) {
-        if(url.indexOf(this.server) != 0) url = this.server+url;
-        return super.downResource(url,save);
+        return super.get(url, null, 'html');
     }
 }
 

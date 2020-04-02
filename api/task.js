@@ -54,4 +54,15 @@ cls.prototype.remove.settings = {
     }
 };
 
+cls.prototype.start = function () {
+    Queue.start();
+    return `状态：${Queue.status}`;
+};
+
+cls.prototype.stop = function () {
+    Queue.stop = true;
+    return `状态：${Queue.status}`;
+};
+
+
 module.exports = new cls();
