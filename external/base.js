@@ -53,7 +53,7 @@ class cls extends Base {
 
         back = await super.request(method, api, info, back_format, err_msg).catch(result => {
             if (oks && oks.indexOf(result.ok)>-1) return result.data;
-            else if(result.ok == 503) return this.request(method,api,info,back_format,err_msg,oks);
+            else if((result.ok == 503) && (result.msg == "require for verifycode")) return this.request(method,api,info,back_format,err_msg,oks);
             return Promise.reject(result);
         });
         if (this.info && this.info.cache && back) {

@@ -52,7 +52,7 @@ cls.prototype.check = function (resources,formats,reload) {
 
         if (reload
             || !Fs.existsSync(save)
-            || (Fs.statSync(save).size <1)
+            || (Fs.statSync(save).size <1000)
         ) back.push([url, save]);
     }
 
@@ -104,14 +104,17 @@ cls.prototype.getResourceList = async function (catalogues,save_path) {
                         info = infos[j];
                         let types = await AiShen.resource_id(info.url);
                         await Promise.all(types.map(async (type,index) => {
-                            let file_chk = (await AiShenFile.resource_detail(type.uid,type.fid,info.cat)).file_chk,
+                            let file_chk = (await AiShenFile.resource_detail(type.uid,type.fid,info.cat).catch(err => {
+                                    if (err.ok == 503) return {};
+                                    return Promise.reject(err);
+                                })).file_chk,
                                 link = (await AiShenFile.file_url(type.uid,type.fid,file_chk).catch(err => {
                                     if(err.ok == 215) return {};
                                     return Promise.reject(err);
                                 })).downurl;
 
                             if(link) resources.push([
-                                `${save}/${info.cat}/${Ut.fixFileName(info.name)}-${info.auth}.${index?'pdf':'txt'}`,
+                                `${save}/${info.cat}/${Ut.fixFileName(info.name)}-${Ut.fixFileName(info.auth)}.${index?'pdf':'txt'}`,
                                 link
                             ]);
                         }));
