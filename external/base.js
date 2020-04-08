@@ -40,7 +40,7 @@ class cls extends Base {
                 ? Ut.fixFileName(api)
                 : crypto.createHash('md5').update(api+JSON.stringify(info)).digest("hex");
             if(name.indexOf('.html') < 0) name += '.html';
-            root = Path.resolve(__dirname, `../view/${this.name}/origin`);
+            root = Path.resolve(__dirname, `../view/cache/${this.name}`);
             file_path = `${root}/${name}`;
         }
         if (this.cache && Fs.existsSync(file_path)) {
