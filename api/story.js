@@ -10,14 +10,21 @@ const Base = require('koa2frame').api,
 class cls extends Base{
     constructor () {
         super('520story');
+        this.types = {
+            check: "检测",
+            update: "下载更新",
+            reload: "重新下载"
+        }
     }
 }
 
+let instance = new cls();
+
 cls.prototype.sync = async function (ctx) {
-    let query = ctx.query,
-        type = query.type,
-        url = query.url,
-        save_path = query.save;
+    let body = ctx.body,
+        type = body.type,
+        url = body.url,
+        save_path = body.save;
     if(save_path.slice(save_path.length-1) != '/')
         save_path += '/';
 
@@ -33,7 +40,7 @@ cls.prototype.sync = async function (ctx) {
 cls.prototype.sync.settings = {
     params: {
         is_filter: true,
-        query: {
+        body: {
             "type": "object",
             "properties": {
                 "url": {
@@ -52,4 +59,14 @@ cls.prototype.sync.settings = {
     }
 };
 
+cls.prototype.init = async function () {
+    return {
+        types: Object.keys(instance.types).map(id => {
+            return {
+                id,
+                name: instance.types[id]
+            }
+        })
+    }
+};
 module.exports = new cls();
