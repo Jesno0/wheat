@@ -19,20 +19,21 @@
   import MainMenu from './components/MainMenu.vue'
   import Fydt from './components/Fydt.vue'
   import Story from './components/Story.vue'
+  import Task from './components/Task.vue'
+  import Movie from './components/Movie.vue'
 
   export default {
     components: {
-      MainMenu,
-      Fydt,
-      Story
+      MainMenu
     },
     router: new VueRouter({
       routes: [
         {path: '/',redirect: '/fydt'},
         {path: '/fydt', component: Fydt},
-        {path: '/520tingshu', component: Story},
+        {path: '/story', component: Story},
         {path: '/compress', component: Story},
-        {path: '/task', component: Story}
+        {path: '/task', component: Task},
+        {path: '/movie', component: Movie}
       ]
     })
   }
@@ -41,7 +42,6 @@
 <style scoped>
   .el-container {
     border: 1px solid #eee;
-    font-family: Microsoft YaHei;
     color: #303133;
   }
   .el-header {

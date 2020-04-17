@@ -1,0 +1,12 @@
+.content {
+    margin-left: 50px;
+    margin-bottom: 40px;
+}
+.piece {
+    margin-bottom: 20px;
+}
+.button {
+    color:#fff;
+    background-color: #409eff;
+    border-color: #409eff;
+}

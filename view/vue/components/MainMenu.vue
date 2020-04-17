@@ -3,7 +3,7 @@
         <el-menu-item index="/fydt">
             <span slot="title"><i class="el-icon-bangzhu"></i>FYDT</span >
         </el-menu-item>
-        <el-menu-item index="/520tingshu">
+        <el-menu-item index="/story">
             <span slot="title"><i class="el-icon-mic"></i>故事</span>
         </el-menu-item>
         <el-submenu index="/compress" disabled>
@@ -23,6 +23,9 @@
             <span slot="title"><i class="el-icon-headset"></i>
                 <el-link href="https://www.zanmeishi.com/" target="_blank">诗歌</el-link>
             </span >
+        </el-menu-item>
+        <el-menu-item index="/movie">
+            <span slot="title"><i class="el-icon-film"></i> 电影</span>
         </el-menu-item>
     </div>
 </template>

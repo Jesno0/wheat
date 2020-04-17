@@ -10,7 +10,9 @@
                 <el-input v-model="ruleForm.save" placeholder="请复制文件夹地址在这里。例如：D:\\故事"></el-input>
             </el-form-item>
             <el-form-item label="地址" prop="url">
-                <el-input v-model="ruleForm.url" placeholder="请复制上面网址中故事目录地址在这里。例如：http://www.520tingshu.com/book/book5542.html"></el-input>
+                <el-input v-model="ruleForm.url"
+                          placeholder="请复制上面网址中故事目录地址在这里。例如：http://www.520tingshu.com/book/book5542.html">
+                </el-input>
             </el-form-item>
             <el-form-item label="操作" prop="type">
                 <el-radio-group v-model="ruleForm.type">
@@ -24,17 +26,20 @@
         </el-form>
 
         <el-divider content-position="left">显示结果</el-divider>
-        <div class="content">
-            <el-input class="piece" v-model="output" id="output" type="textarea" rows="12"></el-input>
-            <el-button class="button" @click="clearResult()">清空</el-button>
-        </div>
-
+        <result class="content" ref="result"></result>
     </div>
 </template>
 
 <script>
+    import '../../css/RouterView.css'
+    import {ApiStoryInit,ApiStorySync} from '../../js/api'
+    import Result from './common/Result.vue'
+
     export default {
         name: 'Story',
+        components: {
+            Result
+        },
         data () {
             return {
                 isShowForm: false,
@@ -60,11 +65,10 @@
                 }
             }
         },
-        created () {
+        mounted () {
             let _this = this;
-            this.$ajax.get('/story/init').then(function (init_data) {
-                if(init_data.status != 200) return Promise.reject(init_data);
-                init_data = init_data.data.data;
+            let _result = _this.$refs.result;
+            ApiStoryInit().then(function (init_data) {
                 _this.types = init_data.types;
                 _this.ruleForm = {
                     save: 'D:\\故事',
@@ -72,78 +76,35 @@
                     type: init_data.types[0].id
                 };
                 _this.isShowForm = true;
-                _this.write('初始化成功');
+                _result.write('初始化成功');
             }).catch(function (err) {
-                _this.write(err);
-                _this.write('初始化失败');
+                _result.write('初始化失败');
+                _result.write(err);
             });
         },
         methods: {
             submitForm(formName) {
                 let _this = this;
-                let form = this.$refs[formName];
-                form.validate(function (valid) {
+                let _result = _this.$refs.results;
+                let _form = this.$refs[formName];
+                _form.validate(function (valid) {
                     if (!valid) return false;
-                    _this.write('任务开始...');
-                    _this.$ajax.post('/story/sync', Object(_this.ruleForm)).then(function (result) {
-                        result = result.data;
-                        if(result.ok === 0) {
-                            _this.write(result.msg);
-                            _this.write(result.data);
-                        }else {
-                            _this.write(result);
-                        }
+                    _result.write('任务开始中...');
+                    ApiStorySync(Object(_this.ruleForm)).then(function (result) {
+                        _result.write('任务执行完成：');
+                        _result.write(result);
                     }).catch(function (err) {
-                        _this.write(err);
-                        _this.write('任务请求失败');
+                        _result.write('任务请求失败');
+                        _result.write(err);
                     });
                 });
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
-            },
-            clearResult() {
-                this.output = "";
-            },
-            write(param) {
-                let _this = this;
-                let output_str = _this.output;
-                if (!param) return;
-                switch (param.constructor) {
-                    case String:
-                        if (output_str) output_str += `\r\n`;
-                        output_str += param;
-                        _this.output = output_str;
-                        _this.$nextTick(function () {
-                            let msg = document.getElementById('output');
-                            msg.scrollTop = msg.scrollHeight;
-                        });
-                        break;
-                    case Array:
-                        param.map(function (item) {
-                            _this.write(item);
-                        });
-                        break;
-                    case Object:
-                        _this.write(JSON.stringify(param));
-                        break;
-                }
             }
         }
     }
 </script>
 
 <style scoped>
-    .content {
-        margin-left: 50px;
-        margin-bottom: 40px;
-    }
-    .piece {
-        margin-bottom: 20px;
-    }
-    .button {
-        color:#fff;
-        background-color: #409eff;
-        border-color: #409eff;
-    }
 </style>

@@ -34,7 +34,7 @@ cls.prototype.start = async function () {
     this.stop = false;
 
     let info = this.DbFunc.findOne();
-    if(!info) return;
+    if(!info) return this.status = false;
 
     if(info.url.indexOf('http') == 0)
         await ExternalCls.downResource(info.url,info.id).catch(err => {
