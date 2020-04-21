@@ -7,7 +7,6 @@ import Home from '../vue/Home.vue';
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
-Vue.prototype.$ajax= axios;
 
 new Vue({
     el: '#app',

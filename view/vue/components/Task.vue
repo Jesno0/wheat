@@ -72,10 +72,11 @@
                 let _this = this;
                 let _result = _this.$refs.result;
                 _result.write('删除中...');
-                ApiTaskRemove(_this.id).then(function (result) {
+                if(!_this.id) _result.write(`请添加删除关键字`);
+                else ApiTaskRemove(_this.id).then(function (result) {
                     _this.write(`删除数量：${result}`);
                 }).catch(function (err) {
-                    _result.write('删除请求失败');
+                    _result.write('删除失败');
                     _result.write(err);
                 });
             },
@@ -84,10 +85,10 @@
                 let _result = _this.$refs.result;
                 _result.write('任务启动中...');
                 ApiTaskStart().then(function (result) {
-                    _result.write('任务请求完成');
+                    _result.write('任务完成');
                     _result.write(result);
                 }).catch(function (err) {
-                    _result.write('任务请求失败');
+                    _result.write('任务失败');
                     _result.write(err);
                 });
             },
@@ -95,11 +96,11 @@
                 let _this = this;
                 let _result = _this.$refs.result;
                 _result.write('任务取消中...');
-                ApiTaskStop.then(function (result) {
-                    _result.write('任务请求完成');
+                ApiTaskStop().then(function (result) {
+                    _result.write('任务完成');
                     _result.write(result);
                 }).catch(function (err) {
-                    _result.write('任务请求失败');
+                    _result.write('任务失败');
                     _result.write(err);
                 });
             }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-menu-item index="/fydt">
-            <span slot="title"><i class="el-icon-bangzhu"></i>FYDT</span >
+            <span slot="title"><i class="el-icon-bangzhu"></i>FYDT</span>
         </el-menu-item>
         <el-menu-item index="/story">
             <span slot="title"><i class="el-icon-mic"></i>故事</span>
