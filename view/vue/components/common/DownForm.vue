@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-form class="content" v-if="isShowForm" :name="name" :model="form" :rules="rules" ref="form" label-width="100px">
+        <el-form class="content" v-if="isShowForm" :name="name" :model="form" :rules="rules" ref="form" label-width="auto">
             <el-form-item label="保存" prop="save">
                 <el-input v-model="form.save" placeholder="请复制文件夹地址在这里。例如：D:\\wheat资料"></el-input>
             </el-form-item>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+    import '../../../css/Element.css'
     import '../../../css/RouterView.css'
 
     export default {

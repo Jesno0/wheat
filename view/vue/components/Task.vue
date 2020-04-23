@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-divider content-position="left">查找任务</el-divider>
-        <el-form class="content" label-width="100px">
+        <el-form class="content" label-width="auto">
             <el-form-item label="关键字">
                 <el-input v-model="id" placeholder="请输入你想查找或删除的相关内容，不填写表示全部任务。"></el-input>
             </el-form-item>
@@ -12,13 +12,15 @@
         </el-form>
 
         <el-divider content-position="left">执行任务</el-divider>
-        <el-form class="content" label-width="100px">
-            <el-button type="primary" @click="run()">开始</el-button>
-            <el-button @click="cancel()">停止</el-button>
+        <el-form class="content" label-width="auto">
+            <el-form-item label="">
+                <el-button type="primary" @click="run()">开始</el-button>
+                <el-button @click="cancel()">停止</el-button>
+            </el-form-item>
         </el-form>
 
         <el-divider content-position="left">显示结果</el-divider>
-        <el-form class="content" label-width="100px">
+        <el-form class="content" label-width="auto">
             <el-form-item label="状态">
                 <el-radio-group v-model="status" disabled>
                     <el-radio :label="1">运行</el-radio>
@@ -33,6 +35,7 @@
 
 
 <script>
+    import '../../css/Element.css'
     import '../../css/RouterView.css'
     import {ApiTaskList,ApiTaskRemove,ApiTaskStart,ApiTaskStop} from '../../js/api'
     import Result from './common/Result.vue'

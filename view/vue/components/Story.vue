@@ -14,6 +14,7 @@
 </template>
 
 <script>
+    import '../../css/Element.css'
     import '../../css/RouterView.css'
     import {ApiStoryInit,ApiStorySync} from '../../js/api'
     import DownForm from './common/DownForm.vue'

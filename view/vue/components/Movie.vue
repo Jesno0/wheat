@@ -12,6 +12,7 @@
 </template>
 
 <script>
+    import '../../css/Element.css'
     import '../../css/RouterView.css'
 
     export default {

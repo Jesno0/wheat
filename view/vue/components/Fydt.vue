@@ -12,6 +12,7 @@
 </template>
 
 <script>
+    import '../../css/Element.css'
     import '../../css/RouterView.css'
     import {ApiFydtInit,ApiFydtSync} from '../../js/api'
     import DownForm from './common/DownForm.vue'

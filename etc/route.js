@@ -18,7 +18,7 @@ module.exports = {
      * value：具体方法路径。｛｝中的值对应key中的值
      */
     map: {
-        'get/':  `view/index.art`,
+        'get/':  `view/index.html`,
         'post/': `${modulesRoot}/index/index`,
         'get/:file': function (params) {
             if(fs.existsSync(path.resolve(__dirname,`../${modulesRoot}/${params.file}.js`))) return `${modulesRoot}/:file/index`;

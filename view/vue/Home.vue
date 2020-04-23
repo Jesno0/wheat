@@ -1,8 +1,8 @@
 <template>
   <el-container>
-    <el-header>Wheat</el-header>
+    <el-header height="50px">Wheat</el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="120px">
         <el-menu :default-active="$route.path" router>
           <main-menu></main-menu>
         </el-menu>
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+  import '../css/Element.css'
   import VueRouter from 'vue-router'
   import MainMenu from './components/MainMenu.vue'
   import Fydt from './components/Fydt.vue'
@@ -46,17 +47,9 @@
   }
   .el-header {
     background-color: #B3C0D1;
-    line-height: 60px;
+    line-height: 50px;
     text-align: right;
     font-size: 20px;
     color: #ffffff;
-  }
-  .el-aside {
-    overflow: hidden;
-  }
-  .el-main {
-    border: 1px solid #eee;
-    padding-left:40px;
-    padding-right:100px;
   }
 </style>

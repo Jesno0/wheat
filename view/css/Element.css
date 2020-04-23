@@ -1,0 +1,45 @@
+.el-aside {
+    overflow: hidden;
+}
+.el-main {
+    border: 1px solid #eee;
+    padding:10px;
+}
+.el-menu-item {
+    /* font-size: 12px; */
+    padding-right: 0px;
+    line-height: 40px;
+    height: auto;
+}
+.el-link {
+    /* font-size: 12px; */
+}
+.el-form {
+    /* label-width: 50px; */
+}
+.el-form-item {
+    margin-bottom: 20px;
+    /* line-height: 10px; */
+}
+.el-divider {
+    /* font-size: 12px; */
+}
+.el-button {
+    font-size: 13px;
+    padding: 9px 15px;
+}
+.el-checkbox {
+    margin-right: 10px;
+}
+.el-checkbox__label {
+    padding-left: 5px;
+}
+.el-form-item__content {
+    line-height: 20px;
+}
+.el-form-item__label {
+    line-height: 20px;
+}
+.el-textarea__inner {
+    font-size: initial;
+}
