@@ -36,7 +36,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "exe": "electron-packager . Wheat --platform=win32 --arch=x64 --icon=favicon.ico --out=./out --asar --app-version=1.0.0 --overwrite --ignore=node_modules --electron-version 8.2.3",
+    "exe": "electron-packager . Wheat --platform=win32 --arch=x64 --icon=./view/favicon.ico --out=./out --asar --app-version=1.0.0 --overwrite --electron-version 8.2.3",
     "dev": "webpack-dev-server --mode development --history-api-fallback --config ./view/webpack.config.js",
     "build": "webpack --progress --hide-modules --mode production --config ./view/webpack.config.js"
   }
