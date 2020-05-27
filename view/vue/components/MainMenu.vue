@@ -3,6 +3,9 @@
         <el-menu-item index="/fydt">
             <span slot="title"><i class="el-icon-bangzhu"></i>FYDT</span>
         </el-menu-item>
+        <el-menu-item index="/book">
+            <span slot="title"><i class="el-icon-notebook-2"></i>书本</span>
+        </el-menu-item>
         <el-menu-item index="/story">
             <span slot="title"><i class="el-icon-mic"></i>故事</span>
         </el-menu-item>

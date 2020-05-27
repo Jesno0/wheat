@@ -25,6 +25,12 @@ var ApiFydtInit = function () {
 var ApiFydtSync = function (opts) {
     return request('post',`/fydt/sync`,opts);
 };
+var ApiAiShenInit = function () {
+    return request('get',`/aishen/init`);
+};
+var ApiAiShenSync = function (opts) {
+    return request('post',`/aishen/sync`,opts);
+};
 var ApiStoryInit = function () {
     return request('get',`/story/init`);
 };
@@ -49,6 +55,8 @@ export {
     ApiTaskStop,
     ApiFydtInit,
     ApiFydtSync,
+    ApiAiShenInit,
+    ApiAiShenSync,
     ApiStoryInit,
     ApiStorySync
 }

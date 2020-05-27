@@ -106,11 +106,11 @@ cls.prototype.getResourceList = async function (catalogues,save_path) {
                         await Promise.all(types.map(async (type,index) => {
                             let file_chk = (await AiShenFile.resource_detail(type.uid,type.fid,info.cat).catch(err => {
                                     if (err.ok == 503) return {};
-                                    return Promise.reject(err);
+                                    return Promise.reject({info,error:err});
                                 })).file_chk,
                                 link = (await AiShenFile.file_url(type.uid,type.fid,file_chk).catch(err => {
                                     if(err.ok == 215) return {};
-                                    return Promise.reject(err);
+                                    return Promise.reject({info,error:err});
                                 })).downurl;
 
                             if(link) resources.push([
