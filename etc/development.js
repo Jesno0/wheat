@@ -25,6 +25,10 @@ module.exports = {
             url: 'http://www.520tingshu.com',
             cache: false
         },
+        ximalaya: {
+            url: 'https://www.ximalaya.com',
+            cache: false
+        },
         aishen: {
             url: 'https://www.aishen360.com',
             cache: true

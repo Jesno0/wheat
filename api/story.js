@@ -21,7 +21,7 @@ class cls extends Base{
 let instance = new cls();
 
 cls.prototype.sync = async function (ctx) {
-    let body = ctx.body,
+    let body = ctx.request.body,
         type = body.type,
         url = body.url,
         save_path = body.save;
@@ -30,11 +30,11 @@ cls.prototype.sync = async function (ctx) {
 
     switch (type) {
         case 'check':
-            return Story.check520(url,save_path);
+            return Story.check(url,save_path);
         case 'update':
         case 'reload':
         default:
-            return Story.async520(url,save_path,type=='reload');
+            return Story.async(url,save_path,type=='reload');
     }
 };
 cls.prototype.sync.settings = {
@@ -50,7 +50,6 @@ cls.prototype.sync.settings = {
                     "type": "string"
                 },
                 "type": {
-                    "type": "string",
                     "enum": ["check","update","reload"]
                 }
             },
