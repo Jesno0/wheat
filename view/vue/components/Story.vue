@@ -1,7 +1,15 @@
 <template>
     <div>
         <el-divider content-position="left">访问原网址</el-divider>
-        <el-link class="content" href="http://www.520tingshu.com" target="_blank">http://www.520tingshu.com</el-link>
+        <el-form class="content" label-width="auto">
+            <el-form-item label="520听书网:">
+                <el-link href="http://www.520tingshu.com" target="_blank">http://www.520tingshu.com</el-link>
+            </el-form-item>
+            <el-form-item label="喜玛拉雅:">
+                <el-link href="https://www.ximalaya.com/" target="_blank">https://www.ximalaya.com</el-link>
+            </el-form-item>
+        </el-form>
+           
 
         <el-divider content-position="left">下载资源</el-divider>
         <down-form class="content" ref="form" v-on:submit="submitForm"

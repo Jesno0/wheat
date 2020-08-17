@@ -18,17 +18,20 @@ class cls extends Base {
 }
 
 cls.prototype.resource_list = async function (url) {
-    //https://www.ximalaya.com/ertong/17583640
-    //https://www.ximalaya.com/revision/album?albumId=17583640
+    //https://www.ximalaya.com/ertong/17583640（原网页）
+    //https://www.ximalaya.com/revision/album?albumId=17583640（故事资讯）
+    //https://www.ximalaya.com/revision/album/v1/getTracksList?albumId=17583640&pageNum=1&pageSize=1000（资源列表）
 
     const page_id = url.slice(url.lastIndexOf('/')+1);
-    const data = await this.get(`/revision/album?albumId=${page_id}`).catch(err => {
+    const info = await this.get(`/revision/album?albumId=${page_id}`).catch(err => {
         if(err.ret == 200 || err.ok == 200) return err.data;
     });
-    return data.tracksInfo.tracks.map(item => {
+    const data = await this.get(`/revision/album/v1/getTracksList?albumId=${page_id}`).catch(err => {
+        if(err.ret == 200 || err.ok == 200) return err.data;
+    });
+    return data.tracks.map(item => {
         return [
-            `${data.mainInfo.albumTitle}_${item.title}`,
-            // `${this.server}/revision/play/v1/audio?ptype=1id=${item.trackId}`
+            `${info.mainInfo.albumTitle}_${item.title}`,
             item.trackId
         ]
     });
