@@ -23,7 +23,7 @@ cls.prototype.async = async function (check_list) {
             url: item[0]
         }
     }));
-    Queue.start(Fydt);
+    Queue.start();
 };
 
 /**
@@ -51,7 +51,7 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
                 old_name_full = res[0],
                 old_name_index = old_name_full.lastIndexOf('.'),
                 ext = old_name_full.slice(old_name_index),
-                type = this.getType(ext);
+                type = Ut.getType(ext);
             if (formats.indexOf(type) < 0) continue;
 
             let new_name = info[0],
@@ -224,27 +224,6 @@ cls.prototype.getResourceList = async function (catalogues) {
                 }
                 return [{save,resources}];
         }
-    }
-};
-
-cls.prototype.getType = function (ext) {
-    if(ext.slice(0,1) == '.') ext = ext.slice(1);
-    switch (ext) {
-        case 'mp3':
-        case 'wav':
-        case 'avi':
-            return 'audio';
-        case 'mp4':
-            return 'video';
-        case 'doc':
-        case 'docx':
-        case 'xls':
-        case 'xlsx':
-        case 'pdf':
-        case 'txt':
-            return 'doc';
-        default:
-            return 'undefined';
     }
 };
 

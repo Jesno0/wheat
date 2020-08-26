@@ -24,7 +24,7 @@ cls.prototype.async = async function (check_list) {
             url: item[0]
         }
     }));
-    Queue.start(AiShen);
+    Queue.start();
 };
 
 /**

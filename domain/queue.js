@@ -6,7 +6,9 @@
 
 const Frame = require('koa2frame'),
     Fs = require('fs'),
+    Path = require('path'),
     ExternalCls = require('../external/base'),
+    Ut = require('../tool/utils'),
     Err = Frame.error,
     Base = Frame.domain;
 
@@ -33,7 +35,7 @@ cls.prototype.start = async function () {
     this.status = true;
     this.stop = false;
 
-    let info = this.DbFunc.findOne();
+    const info = this.DbFunc.findOne();
     if(!info) return this.status = false;
 
     if(info.url.indexOf('http') == 0)
@@ -48,12 +50,12 @@ cls.prototype.start = async function () {
 
     this.status = false;
 
-    let remove_num = (await this.DbFunc.removeOne()).n;
+    const remove_num = (await this.DbFunc.removeOne()).n;
     if(!remove_num) return Err.log(Err.error_log_type.db,'fydt_queue删除失败，任务停止');
 
     if(this.stop) return this.stop = false;
 
-    let list_num = (await this.count({}));
+    const list_num = (await this.count({}));
     if(list_num) await this.start();
 };
 
@@ -68,10 +70,34 @@ cls.prototype.toListFormat = function (model) {
 module.exports = new cls();
 
 function writeFile(path,data) {
+    Ut.mkdirs(Path.dirname(path));
     return new Promise((resolve,reject) => {
-        Fs.writeFile(path,data,err => {
-            if(err) reject();
-            else resolve();
-        });
+        if(Fs.lstatSync(data).isFile()) {
+            Fs.createReadStream(data)
+                .on('data', thuck => {console.log('req data',thuck)})
+                .pipe(Fs.createWriteStream(path))
+                .on('error', err => {
+                    Err.log(Err.error_log_type.http,data,path,err);
+                    if(Fs.existsSync(path)) Fs.unlinkSync(path);
+                    reject();
+                })
+                .on('close', err => {
+                    if(err) {
+                        Err.log(Err.error_log_type.http,data,path,err);
+                        if(Fs.existsSync(path)) Fs.unlinkSync(path);
+                        reject();
+                    }
+                    else resolve();
+                });
+        } else {
+            Fs.writeFile(path,data,err => {
+                if(err) {
+                    Err.log(Err.error_log_type.http,data,path,err);
+                    if(Fs.existsSync(path)) Fs.unlinkSync(path);
+                    reject();
+                }
+                else resolve();
+            });
+        }
     });
 }

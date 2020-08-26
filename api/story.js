@@ -9,7 +9,7 @@ const Base = require('koa2frame').api,
 
 class cls extends Base{
     constructor () {
-        super('520story');
+        super('story');
         this.types = {
             check: "检测",
             update: "下载更新",
@@ -50,7 +50,7 @@ cls.prototype.sync.settings = {
                     "type": "string"
                 },
                 "type": {
-                    "enum": ["check","update","reload"]
+                    "enum": Object.keys(instance.types)
                 }
             },
             "required":["url","save"]

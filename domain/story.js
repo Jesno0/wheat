@@ -15,12 +15,11 @@ class cls {
 }
 
 cls.prototype.async = async function (url,save,reload) {
-    const {external} = this.getUrlType(url);
     const list = await this.check(url,save,reload);
     if(!list.length) return;
 
     await Queue.create(list);
-    Queue.start(external);
+    Queue.start();
 }
 
 cls.prototype.check = async function (url,save,reload) {

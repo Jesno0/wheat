@@ -20,6 +20,7 @@
   import MainMenu from './components/MainMenu.vue'
   import Fydt from './components/Fydt.vue'
   import Story from './components/Story.vue'
+  import File from './components/File.vue'
   import Book from './components/Book.vue'
   import Task from './components/Task.vue'
   import Movie from './components/Movie.vue'
@@ -36,6 +37,7 @@
         {path: '/story', component: Story},
         {path: '/compress', component: Story},
         {path: '/task', component: Task},
+        {path: '/file', component: File},
         {path: '/movie', component: Movie}
       ]
     })

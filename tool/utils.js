@@ -26,4 +26,26 @@ cls.prototype.fixFileName = function (title) {
     return title;
 };
 
+cls.prototype.getType = function (ext) {
+    if(ext.slice(0,1) == '.') ext = ext.slice(1);
+    switch (ext) {
+        case 'mp3':
+        case 'wav':
+        case 'avi':
+            return 'audio';
+        case 'mp4':
+            return 'video';
+        case 'doc':
+        case 'docx':
+        case 'xls':
+        case 'xlsx':
+        case 'pdf':
+        case 'txt':
+            return 'doc';
+        default:
+            return 'other';
+    }
+};
+
+
 module.exports = new cls();

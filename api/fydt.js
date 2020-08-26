@@ -13,6 +13,7 @@ const Frame = require('koa2frame'),
 class cls extends Base{
     constructor () {
         super();
+        
         this.formats = {
             doc: "文档",
             audio: "音频"
@@ -21,7 +22,7 @@ class cls extends Base{
             check: "检测",
             update: "下载更新",
             reload: "重新下载"
-        }
+        };
     }
 }
 
@@ -71,18 +72,15 @@ cls.prototype.sync.settings = {
                 "catalogues": {
                     "type": "array",
                     "items": {
-                        "type": "string",
                         "enum": Object.keys(FydtExt.catalogues)
                     }
                 },
                 "type": {
-                    "type": "string",
                     "enum": Object.keys(instance.types)
                 },
                 "formats": {
                     "type": "array",
                     "items": {
-                        "type": "string",
                         "enum": Object.keys(instance.formats)
                     }
                 }

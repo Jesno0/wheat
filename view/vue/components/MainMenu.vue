@@ -9,6 +9,9 @@
         <el-menu-item index="/story">
             <span slot="title"><i class="el-icon-mic"></i>故事</span>
         </el-menu-item>
+        <el-menu-item index="/file">
+            <span slot="title"><i class="el-icon-document"></i>文件</span>
+        </el-menu-item>
         <el-submenu index="/compress" disabled>
             <template slot="title"><i class="el-icon-document-copy"></i>加解密</template>
             <el-menu-item index="3-1"><i class="el-icon-collection-tag "></i>加密</el-menu-item>

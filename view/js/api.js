@@ -37,6 +37,12 @@ var ApiStoryInit = function () {
 var ApiStorySync = function (opts) {
     return request('post',`/story/sync`,opts);
 };
+var ApiFileInit = function () {
+    return request('get',`/file/init`);
+};
+var ApiFileSync = function (opts) {
+    return request('post',`/file/sync`,opts);
+};
 
 function request (method,url,opts) {
     return Axios[method](url,opts).then(function (result) {
@@ -58,5 +64,7 @@ export {
     ApiAiShenInit,
     ApiAiShenSync,
     ApiStoryInit,
-    ApiStorySync
+    ApiStorySync,
+    ApiFileInit,
+    ApiFileSync
 }

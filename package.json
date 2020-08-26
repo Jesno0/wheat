@@ -36,7 +36,9 @@
   },
   "scripts": {
     "start": "electron .",
-    "exe": "electron-packager . Wheat --platform=win32 --arch=x64 --icon=./view/favicon.ico --out=./out --asar --app-version=1.0.0 --overwrite --electron-version 8.2.3",
+    "exe64": "electron-packager . Wheat --platform=win32 --arch=x64 --icon=./view/favicon.ico --out=./out --asar --app-version=1.0.0 --overwrite --electron-version 8.2.3",
+    "exe32": "electron-packager . Wheat --platform=win32 --arch=ia32 --icon=./view/favicon.ico --out=./out --asar --app-version=1.0.0 --overwrite --electron-version 8.2.3",
+    "exeMac": "electron-packager . Wheat --platform=darwin --arch=x64 --icon=./view/favicon.ico --out=./out --asar --app-version=1.0.0 --overwrite --electron-version 8.2.3",
     "dev": "webpack-dev-server --mode development --history-api-fallback --config ./view/webpack.config.js",
     "build": "webpack --progress --hide-modules --mode production --config ./view/webpack.config.js"
   }
