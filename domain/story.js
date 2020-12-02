@@ -59,6 +59,7 @@ cls.prototype.checkXimalaya = async function (url,save,reload) {
     
     for(let info of arr.values()) {
         const detail = await Ximalaya.resource_detail(info[1]);
+        if(!detail) continue;
         const ext = detail.slice(detail.lastIndexOf('.'));
         const paths = info[0].split('_');
         const id = save + Ut.fixFileName(paths[0]) + '/' +  Ut.fixFileName(paths[1]) + ext;

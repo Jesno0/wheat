@@ -22,19 +22,33 @@ cls.prototype.resource_list = async function (url) {
     //https://www.ximalaya.com/revision/album?albumId=17583640（故事资讯）
     //https://www.ximalaya.com/revision/album/v1/getTracksList?albumId=17583640&pageNum=1&pageSize=1000（资源列表）
 
+    if(url.slice(-1) == '/') url = url.slice(0,-1);
     const page_id = url.slice(url.lastIndexOf('/')+1);
     const info = await this.get(`/revision/album?albumId=${page_id}`).catch(err => {
         if(err.ret == 200 || err.ok == 200) return err.data;
     });
-    const data = await this.get(`/revision/album/v1/getTracksList?albumId=${page_id}`).catch(err => {
-        if(err.ret == 200 || err.ok == 200) return err.data;
-    });
-    return data.tracks.map(item => {
-        return [
-            `${info.mainInfo.albumTitle}_${item.title}`,
-            item.trackId
-        ]
-    });
+
+    const is_paid = info.mainInfo.isPaid;
+    if(is_paid) return Promise.reject({ok:-1,msg:"此为付费内容，不能下载。"});
+
+    const back = [];
+    let total = info.tracksInfo.trackTotalCount;
+    let i = 1;
+    while(total > 0) {
+        const data = await this.get(`/revision/album/v1/getTracksList?albumId=${page_id}&pageNum=${i}&pageSize=100`).catch(err => {
+            if(err.ret == 200 || err.ok == 200) return err.data;
+        });
+        back.push( ...data.tracks.map(item => {
+            return [
+                `${info.mainInfo.albumTitle}_${item.title}`,
+                item.trackId
+            ]
+        }));
+        total = total-100;
+        i++;
+    }
+
+    return back;
 };
 
 cls.prototype.resource_detail = async function (trackId) {
@@ -42,7 +56,7 @@ cls.prototype.resource_detail = async function (trackId) {
     
     const data = await this.get(`/revision/play/v1/audio?ptype=1&id=${trackId}`).catch(err => {
         if(err.ret == 200 || err.ok == 200) return err.data;
-    });;
+    });
     return data.src;
 };
 
