@@ -31,27 +31,29 @@ class cls extends Base{
 }
 
 cls.prototype.start = async function () {
+    const _this = this;
     if(this.status) return;
     this.status = true;
     this.stop = false;
 
-    const info = this.DbFunc.findOne();
+    const info = await this.DbFunc.findNext();
     if(!info) return this.status = false;
 
-    if(info.url.indexOf('http') == 0)
-        await ExternalCls.downResource(info.url,info.id).catch(err => {
-            this.status = false;
-            return Promise.reject(err);
-        });
-    else await writeFile(info.id,info.url).catch(err => {
-        this.status = false;
-        return Promise.reject(err);
+    const func = (info.url.indexOf('http') == 0) 
+                    ? ExternalCls.downResource
+                    : writeFile;
+
+    const result = await func(info.url,info.id).catch(async () => {
+        await _this.DbFunc.ban(info);
+        return false;
     });
 
     this.status = false;
 
-    const remove_num = (await this.DbFunc.removeOne()).n;
-    if(!remove_num) return Err.log(Err.error_log_type.db,'fydt_queue删除失败，任务停止');
+    if(result !== false) {
+        const remove_num = (await _this.DbFunc.remove({id:info.id})).n;
+        if(!remove_num) return Err.log(Err.error_log_type.db,'fydt_queue删除失败，任务停止');
+    }
 
     if(this.stop) return this.stop = false;
 
@@ -69,32 +71,38 @@ cls.prototype.toListFormat = function (model) {
 
 module.exports = new cls();
 
-function writeFile(path,data) {
+function writeFile(data,path) {
     Ut.mkdirs(Path.dirname(path));
     return new Promise((resolve,reject) => {
         if(Fs.lstatSync(data).isFile()) {
             Fs.createReadStream(data)
-                .on('data', thuck => {console.log('req data',thuck)})
-                .pipe(Fs.createWriteStream(path))
+                // .on('data', thuck => {console.log('req data',path,thuck)})
                 .on('error', err => {
                     Err.log(Err.error_log_type.http,data,path,err);
                     if(Fs.existsSync(path)) Fs.unlinkSync(path);
-                    reject();
+                    reject(err);
                 })
-                .on('close', err => {
-                    if(err) {
+                .pipe(Fs.createWriteStream(path)
+                    .on('error', err => {
                         Err.log(Err.error_log_type.http,data,path,err);
                         if(Fs.existsSync(path)) Fs.unlinkSync(path);
-                        reject();
-                    }
-                    else resolve();
-                });
+                        reject(err);
+                    })
+                    .on('close', err => {
+                        if(err) {
+                            Err.log(Err.error_log_type.http,data,path,err);
+                            if(Fs.existsSync(path)) Fs.unlinkSync(path);
+                            reject(err);
+                        }
+                        else resolve();
+                    })
+                );
         } else {
             Fs.writeFile(path,data,err => {
                 if(err) {
                     Err.log(Err.error_log_type.http,data,path,err);
                     if(Fs.existsSync(path)) Fs.unlinkSync(path);
-                    reject();
+                    reject(err);
                 }
                 else resolve();
             });

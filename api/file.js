@@ -5,6 +5,7 @@
  */
 
 const Base = require('koa2frame').api,
+    Fs = require('fs'),
     File = require('../domain/file');
 
 class cls extends Base{
@@ -46,7 +47,7 @@ cls.prototype.sync = async function (ctx) {
             return File.async(url,save_path,is_reload,is_dir,formats);
     }
 };
-cls.prototype.sync.settings__ = {
+cls.prototype.sync.settings = {
     params: {
         is_filter: true,
         body: {
@@ -92,4 +93,42 @@ cls.prototype.init = async function () {
         })
     }
 };
+
+cls.prototype.catalogue = async function (ctx) {
+    let body = ctx.request.query,
+        type = body.type,
+        url = body.url,
+        save_path = body.save || `${body.url}/目录.txt`,
+        list = File.dirList(url);
+
+    switch (type) {
+        case 'update':
+        case 'reload':
+            Fs.writeFileSync(save_path, File.writeCatalogue(list));
+        case 'check':
+        default:
+            return list;            
+    }
+};
+cls.prototype.catalogue.settings = {
+    params: {
+        is_filter: true,
+        query: {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "save": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": Object.keys(instance.types)
+                }
+            },
+            "required":["url"]
+        }
+    }
+};
+
 module.exports = new cls();

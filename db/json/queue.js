@@ -23,24 +23,31 @@ class cls extends Base{
                     type: 'string',
                     minLength: 1
                 },
+                status: {
+                    type: 'string',
+                    minLength: 1
+                },
                 create_at: {
                     type: Date
                 }
             },required: ['url','id']
         });
 
+        if(!opts.status) opts.status = 'normal';
         if(!opts.create_at) opts.create_at = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
         return opts;
     }
 }
 
-cls.prototype.findOne = function () {
-    return this.db[0];
+cls.prototype.findNext = async function () {
+    return (await this.find({status:'normal'}))[0];
 };
 
-cls.prototype.removeOne = function () {
-    if(this.db[0]) return this.remove({id:this.db[0].id});
-};
+cls.prototype.ban = async function (model) {
+    model.status = 'ban';
+    delete model.create_at;
+    return this.update({id:model.id}, model);
+}
 
 module.exports = new cls();

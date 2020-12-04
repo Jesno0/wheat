@@ -22,7 +22,6 @@ cls.prototype.list = async function (ctx) {
 };
 cls.prototype.list.settings = {
     params: {
-        is_filter: true,
         query: {
             "type": "object",
             "properties": {

@@ -47,5 +47,35 @@ cls.prototype.getType = function (ext) {
     }
 };
 
+exports.writeResponse = function(ctx, data, file_name){
+    if(!data) return;
+
+    const userAgent = (ctx.req.headers['user-agent']||'').toLowerCase();
+    if(userAgent.indexOf('msie') >= 0 || userAgent.indexOf('chrome') >= 0) {
+        file_name = `filename=${encodeURIComponent(file_name)}`;
+    } else if(userAgent.indexOf('firefox') >= 0) {
+        file_name = `filename*="utf8\'\'${encodeURIComponent(file_name)}"`;
+    } else {/* safari等其他非主流浏览器只能自求多福了 */
+        file_name = `filename=${Buffer.from(file_name).toString('binary')}`;
+    }
+
+    ctx.res.writeHead(200, {
+        'Accept-Ranges': 'bytes',
+        'Content-Type': exports.getContentType(Path.parse(file_name).ext),
+        'Content-Disposition': `attachment; ${file_name}`
+    });
+    ctx.res.end(data);
+};
+
+exports.getContentType = function(ext) {
+    switch(ext.replace('.','')) {
+        case 'xlsx':
+        case 'xls':
+            return 'application/x-excel';
+        case 'm3u8':
+        return 'application/vnd.apple.mpegurl';
+    }
+}
+
 
 module.exports = new cls();

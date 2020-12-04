@@ -40,7 +40,7 @@ cls.prototype.check = async function (dir,save,reload=false,is_dir,formats) {
                 const is_exists = Fs.existsSync(_target);
                 const ext = _origin.slice(_origin.lastIndexOf('.')+1);
                 const type = Ut.getType(ext);
-                if((reload || !is_exists) && formats.includes(type)) {
+                if((reload || !is_exists) && (!formats || formats.includes(type))) {
                     back.push({
                         id: _target,
                         url: _origin
@@ -49,6 +49,32 @@ cls.prototype.check = async function (dir,save,reload=false,is_dir,formats) {
             }
         });
     }
+};
+
+cls.prototype.dirList = function (url) {
+    const back = [];
+    circle(url);
+    return back;
+
+    function circle(_dir) {
+        if(_dir.slice(-1) == "/") _dir = _dir.slice(0,-1);
+        const files = Fs.readdirSync(_dir).sort();
+
+        files.map(file_name => {
+            const target = `${_dir}/${file_name}`;
+            if(Fs.lstatSync(target).isDirectory()) {
+                circle(target);
+            }else {
+                back.push(target.replace(`${url}/`,''));
+            }
+        });
+    }
+};
+
+cls.prototype.writeCatalogue = function (arr) {
+    return arr.map((item,i) => {
+        return `${i}:${item}`;
+    }).join('\n');
 };
 
 module.exports = new cls();
