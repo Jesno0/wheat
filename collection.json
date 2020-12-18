@@ -1,0 +1,1129 @@
+{
+	"info": {
+		"_postman_id": "2391c92a-43f0-4857-9b7a-9fb38053d74d",
+		"name": "wheat",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "fydt",
+			"item": [
+				{
+					"name": "sync",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "save",
+									"value": "F:/1_back/mine/bible/preach",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "讲道信息",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "奇妙恩典",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "生命再思",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "圣经一神论",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "书卷考查",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "专题系列",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "诗歌",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "书籍推介",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "专题解答",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "check",
+									"description": "check,update,reload",
+									"type": "text"
+								},
+								{
+									"key": "formats",
+									"value": "doc",
+									"type": "text"
+								},
+								{
+									"key": "formats",
+									"value": "audio",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host-wheat}}/fydt/sync"
+					},
+					"response": []
+				},
+				{
+					"name": "init",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded",
+								"disabled": true
+							}
+						],
+						"url": "{{host-wheat}}/fydt/init"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "aishen",
+			"item": [
+				{
+					"name": "sync",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "save",
+									"value": "F:/1_back/mine/bible/book/aishen",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "神学书籍",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "灵修书籍",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "信仰随笔",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "讲道讲章",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "热门书籍",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "check",
+									"description": "check,update,reload",
+									"type": "text"
+								},
+								{
+									"key": "formats",
+									"value": "txt",
+									"type": "text"
+								},
+								{
+									"key": "formats",
+									"value": "pdf",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host-wheat}}/aishen/sync"
+					},
+					"response": []
+				},
+				{
+					"name": "init",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded",
+								"disabled": true
+							}
+						],
+						"url": "{{host-wheat}}/aishen/init"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "story",
+			"item": [
+				{
+					"name": "sync",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "url",
+									"value": "https://www.ximalaya.com/ertong/17583640",
+									"type": "text"
+								},
+								{
+									"key": "save",
+									"value": "F:\\1_back\\mine\\cx-story",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "check",
+									"description": "check,relaod,update",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host-wheat}}/story/sync"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "file",
+			"item": [
+				{
+					"name": "sync",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "save",
+									"value": "H:\\cx-story",
+									"type": "text"
+								},
+								{
+									"key": "url",
+									"value": "F:\\1_back\\mine\\cx-story\\new",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "check",
+									"description": "check,reload,update",
+									"type": "text"
+								},
+								{
+									"key": "is_dir",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "formats",
+									"value": "audio",
+									"description": "doc,audio,video,other",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host-wheat}}/file/sync"
+					},
+					"response": []
+				},
+				{
+					"name": "catalogue",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "save",
+									"value": "D:\\back\\mine\\bible\\poetry\\other",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "url",
+									"value": "D:\\back\\mine\\bible\\poetry\\other",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "check",
+									"description": "check,update",
+									"type": "text"
+								},
+								{
+									"key": "sort",
+									"value": "birthtimeMs",
+									"description": "name,size,birthtimeMs,mtimeMs",
+									"type": "text"
+								},
+								{
+									"key": "sort_type",
+									"value": "desc",
+									"description": "asc,desc",
+									"type": "text",
+									"disabled": true
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host-wheat}}/file/catalogue?url=D:\\back\\mine\\bible\\poetry\\other&type=update&sort=birthtimeMs",
+							"host": [
+								"{{host-wheat}}"
+							],
+							"path": [
+								"file",
+								"catalogue"
+							],
+							"query": [
+								{
+									"key": "save",
+									"value": "D:\\back\\mine\\bible\\poetry\\other",
+									"disabled": true
+								},
+								{
+									"key": "url",
+									"value": "D:\\back\\mine\\bible\\poetry\\other"
+								},
+								{
+									"key": "type",
+									"value": "update",
+									"description": "check,update"
+								},
+								{
+									"key": "sort",
+									"value": "birthtimeMs",
+									"description": "name,size,birthtimeMs,mtimeMs"
+								},
+								{
+									"key": "sort_type",
+									"value": "desc",
+									"description": "asc,desc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "baidu",
+			"item": [
+				{
+					"name": "fileDown",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"url": {
+							"raw": "{{host-wheat}}/baidu/fileDown?url=https://wenku.baidu.com/view/37688ad7b14e852458fb57bb.html&save=F:\\1_back\\mine\\OneDrive\\bible\\book",
+							"host": [
+								"{{host-wheat}}"
+							],
+							"path": [
+								"baidu",
+								"fileDown"
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://wenku.baidu.com/view/37688ad7b14e852458fb57bb.html"
+								},
+								{
+									"key": "save",
+									"value": "F:\\1_back\\mine\\OneDrive\\bible\\book"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "task",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{host-wheat}}/task/list",
+							"host": [
+								"{{host-wheat}}"
+							],
+							"path": [
+								"task",
+								"list"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "格林童话",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{host-wheat}}/task/remove?id=test",
+							"host": [
+								"{{host-wheat}}"
+							],
+							"path": [
+								"task",
+								"remove"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "test"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stop",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": "{{host-wheat}}/task/stop"
+					},
+					"response": []
+				},
+				{
+					"name": "start",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": "{{host-wheat}}/task/start"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "aishen_origin",
+			"item": [
+				{
+					"name": "获取书列表",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true,
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded; charset=UTF-8",
+								"type": "text"
+							},
+							{
+								"key": "Host",
+								"value": "www.aishen360.com",
+								"type": "text"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Cookie",
+								"value": "_gads=ID=906c4e15554ae12f:T=1585615024:S=ALNI_Mab3Rv5JKAnODYbKcMmRNbb4BpE6Q; _ga=GA1.2.154594386.1585615027; _gid=GA1.2.1461507691.1585615028; isEnabledCookie=true; JSESSIONID=abcSM7nQLWxVYgndHOVex; Hm_lvt_ada9039d77ee056bd43572b93c9b8b08=1585615028,1585642087; COOKIE_IS_ENABLED_COOKIE=abcSM7nQLWxVYgndHOVex; Hm_lpvt_ada9039d77ee056bd43572b93c9b8b08=1585699960; __atuvc=74%7C14; __atuvs=5e83d90e0a1544a700b",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "type",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "page_num",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "cls_id",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "par_id",
+									"value": "1000",
+									"type": "text"
+								},
+								{
+									"key": "author_id",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "order_type",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "keyword",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://www.aishen360.com/CsAjax.do?method=getBookListCommon",
+							"protocol": "http",
+							"host": [
+								"www",
+								"aishen360",
+								"com"
+							],
+							"path": [
+								"CsAjax.do"
+							],
+							"query": [
+								{
+									"key": "method",
+									"value": "getBookListCommon"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "书本详情页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://www.aishen360.com/download/fragrance-of-myrrh.html"
+					},
+					"response": []
+				},
+				{
+					"name": "获取文件",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "webapi.ctfile.com",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Cookie",
+								"value": "ua_checkmutilogin=KwHXXXvjne; protected_uid=103260074901; ct_pop_adlist=a%3A14%3A%7Bi%3A0%3Bi%3A31149%3Bi%3A1%3Bi%3A31076%3Bi%3A2%3Bi%3A31128%3Bi%3A3%3Bi%3A31134%3Bi%3A4%3Bi%3A31119%3Bi%3A5%3Bi%3A31110%3Bi%3A6%3Bi%3A28686%3Bi%3A7%3Bi%3A30837%3Bi%3A8%3Bi%3A31159%3Bi%3A9%3Bi%3A30988%3Bi%3A10%3Bi%3A31116%3Bi%3A11%3Bi%3A31125%3Bi%3A12%3Bi%3A31163%3Bi%3A13%3Bi%3A30994%3B%7D",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "cross-site",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Referer",
+								"value": "http://down.aishen360.com/file/1210232-395746725",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Pragma",
+								"value": "no-cache",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/javascript, */*; q=0.01",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Accept-Language",
+								"value": "zh-CN,zh;q=0.9",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Cache-Control",
+								"value": "no-cache",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Origin",
+								"value": "http://down.aishen360.com",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://webapi.ctfile.com/getfile.php?f=1210232-395746725&passcode=&r=0.547137591339367&ref=http://www.aishen360.com/download/fragrance-of-myrrh.html",
+							"protocol": "https",
+							"host": [
+								"webapi",
+								"ctfile",
+								"com"
+							],
+							"path": [
+								"getfile.php"
+							],
+							"query": [
+								{
+									"key": "f",
+									"value": "1210232-395746725"
+								},
+								{
+									"key": "passcode",
+									"value": ""
+								},
+								{
+									"key": "r",
+									"value": "0.547137591339367",
+									"description": "Math.random()"
+								},
+								{
+									"key": "ref",
+									"value": "http://www.aishen360.com/download/fragrance-of-myrrh.html"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "_txt下载页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://down.aishen360.com/file/1210232-412121168"
+					},
+					"response": []
+				},
+				{
+					"name": "_pdf下载页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://down.aishen360.com/file/1210232-395746725"
+					},
+					"response": []
+				},
+				{
+					"name": "txt下载路径",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://webapi.ctfile.com/get_file_url.php?uid=1210232&fid=412121168&folder_id=0&file_chk=c437ac9ef11502a3fa6fd4657d7d4f6e",
+							"protocol": "https",
+							"host": [
+								"webapi",
+								"ctfile",
+								"com"
+							],
+							"path": [
+								"get_file_url.php"
+							],
+							"query": [
+								{
+									"key": "uid",
+									"value": "1210232"
+								},
+								{
+									"key": "fid",
+									"value": "412121168"
+								},
+								{
+									"key": "folder_id",
+									"value": "0"
+								},
+								{
+									"key": "file_chk",
+									"value": "c437ac9ef11502a3fa6fd4657d7d4f6e"
+								},
+								{
+									"key": "mb",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "app",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "acheck",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "verifycode",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "rd",
+									"value": "0.32993161067292376",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pdf下载路径",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://webapi.ctfile.com/get_file_url.php?uid=1210232&fid=395746725&folder_id=0&file_chk=6b49bc80e6456298c3dad4a4601c14fb",
+							"protocol": "https",
+							"host": [
+								"webapi",
+								"ctfile",
+								"com"
+							],
+							"path": [
+								"get_file_url.php"
+							],
+							"query": [
+								{
+									"key": "uid",
+									"value": "1210232"
+								},
+								{
+									"key": "fid",
+									"value": "395746725"
+								},
+								{
+									"key": "folder_id",
+									"value": "0"
+								},
+								{
+									"key": "file_chk",
+									"value": "6b49bc80e6456298c3dad4a4601c14fb"
+								},
+								{
+									"key": "mb",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "app",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "acheck",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "verifycode",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "rd",
+									"value": "0.5118767186542768",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "txt下载",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://u232.161-ctc-dd.tv002.com/down/7b1b6c8c9862ac50fda8607f4ccd7122/73_fragrance-of-myrrh.txt?cts=dx-f-D61A140A60A173Fb92a0&ctp=61A140A60A173&ctt=1585723829&limit=1&spd=1550000&ctk=7b1b6c8c9862ac50fda8607f4ccd7122&chk=4efeab2e1187e9efb716cbbba3497fd7-285443&mtd=1",
+							"protocol": "http",
+							"host": [
+								"u232",
+								"161-ctc-dd",
+								"tv002",
+								"com"
+							],
+							"path": [
+								"down",
+								"7b1b6c8c9862ac50fda8607f4ccd7122",
+								"73_fragrance-of-myrrh.txt"
+							],
+							"query": [
+								{
+									"key": "cts",
+									"value": "dx-f-D61A140A60A173Fb92a0"
+								},
+								{
+									"key": "ctp",
+									"value": "61A140A60A173"
+								},
+								{
+									"key": "ctt",
+									"value": "1585723829"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								},
+								{
+									"key": "spd",
+									"value": "1550000"
+								},
+								{
+									"key": "ctk",
+									"value": "7b1b6c8c9862ac50fda8607f4ccd7122"
+								},
+								{
+									"key": "chk",
+									"value": "4efeab2e1187e9efb716cbbba3497fd7-285443"
+								},
+								{
+									"key": "mtd",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pdf下载",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://u232.161-ctc-dd.tv002.com/down/d397131b3e9d88addb0a11c84f9188d1/%E9%A6%A8%E9%A6%99%E7%9A%84%E6%B2%A1%E8%8D%AF.pdf?cts=dx-f-D61A140A60A173Fb92a0&ctp=61A140A60A173&ctt=1585724039&limit=1&spd=1550000&ctk=d397131b3e9d88addb0a11c84f9188d1&chk=c10a2961c0fa12a8c1cc04f9b8ceecd7-688070&mtd=1",
+							"protocol": "http",
+							"host": [
+								"u232",
+								"161-ctc-dd",
+								"tv002",
+								"com"
+							],
+							"path": [
+								"down",
+								"d397131b3e9d88addb0a11c84f9188d1",
+								"%E9%A6%A8%E9%A6%99%E7%9A%84%E6%B2%A1%E8%8D%AF.pdf"
+							],
+							"query": [
+								{
+									"key": "cts",
+									"value": "dx-f-D61A140A60A173Fb92a0"
+								},
+								{
+									"key": "ctp",
+									"value": "61A140A60A173"
+								},
+								{
+									"key": "ctt",
+									"value": "1585724039"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								},
+								{
+									"key": "spd",
+									"value": "1550000"
+								},
+								{
+									"key": "ctk",
+									"value": "d397131b3e9d88addb0a11c84f9188d1"
+								},
+								{
+									"key": "chk",
+									"value": "c10a2961c0fa12a8c1cc04f9b8ceecd7-688070"
+								},
+								{
+									"key": "mtd",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "更新文件",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "book_id",
+									"value": "73",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://www.aishen360.com/CsAjax.do?method=updateBookDownloadCount",
+							"protocol": "http",
+							"host": [
+								"www",
+								"aishen360",
+								"com"
+							],
+							"path": [
+								"CsAjax.do"
+							],
+							"query": [
+								{
+									"key": "method",
+									"value": "updateBookDownloadCount"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "js方法",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://webapi.pipipan.com/assets/js/other.js?v=20200330",
+							"protocol": "https",
+							"host": [
+								"webapi",
+								"pipipan",
+								"com"
+							],
+							"path": [
+								"assets",
+								"js",
+								"other.js"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": "20200330"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取密码",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://webapi.ctfile.com/passcode.php?file_id=412121168&folder_id=0&userid=1210232&passcode=",
+							"protocol": "https",
+							"host": [
+								"webapi",
+								"ctfile",
+								"com"
+							],
+							"path": [
+								"passcode.php"
+							],
+							"query": [
+								{
+									"key": "file_id",
+									"value": "412121168"
+								},
+								{
+									"key": "folder_id",
+									"value": "0"
+								},
+								{
+									"key": "userid",
+									"value": "1210232"
+								},
+								{
+									"key": "passcode",
+									"value": ""
+								},
+								{
+									"key": "r",
+									"value": "Math.random()",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

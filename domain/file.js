@@ -51,7 +51,7 @@ cls.prototype.check = async function (dir,save,reload=false,is_dir,formats) {
     }
 };
 
-cls.prototype.dirList = function (url) {
+cls.prototype.dirList = function (url,sort_by='name',sort_type='asc') {
     const back = [];
     circle(url);
     return back;
@@ -59,6 +59,15 @@ cls.prototype.dirList = function (url) {
     function circle(_dir) {
         if(_dir.slice(-1) == "/") _dir = _dir.slice(0,-1);
         const files = Fs.readdirSync(_dir).sort();
+
+        if(sort_by != 'name') {
+            files.sort( (a,b) => { 
+                const a_stats = Fs.statSync(`${_dir}/${a}`);
+                const b_stats = Fs.statSync(`${_dir}/${b}`);
+                if(sort_type == 'desc') return a_stats[sort_by] > b_stats[sort_by] ? -1 : 1;
+                else return a_stats[sort_by] > b_stats[sort_by] ? 1 : -1;
+            });
+        }
 
         files.map(file_name => {
             const target = `${_dir}/${file_name}`;

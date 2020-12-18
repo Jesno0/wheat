@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-form class="content" v-if="isShowForm" :name="name" :model="form" :rules="rules" ref="form" label-width="auto">
+        <el-form class="content" v-if="isShowForm" :name="name" :model="form" :rules="rules" :ref="name" label-width="auto">
             <el-form-item label="保存" prop="save">
                 <el-input v-model="form.save" placeholder="请复制文件夹地址在这里。例如：D:\\wheat资料"></el-input>
             </el-form-item>
@@ -25,6 +25,16 @@
                 <el-radio-group v-model="form.is_dir">
                     <el-radio label="1" key="1">是</el-radio>
                     <el-radio label="0" key="0">否</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="排序" v-if="isSort" prop="sort">
+                <el-radio-group v-model="form.sort">
+                    <el-radio v-for="sort in init_data.sorts" :label="sort.id" :key="sort.id">{{sort.name}}</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="排序类型" v-if="isSortType" prop="sort_type">
+                <el-radio-group v-model="form.sort_type">
+                    <el-radio v-for="sort_type in init_data.sort_types" :label="sort_type.id" :key="sort_type.id">{{sort_type.name}}</el-radio>
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="操作" prop="type">
@@ -63,6 +73,8 @@
                 isCatalogues: false,
                 isIsDir: false,
                 isUrl: false,
+                isSort: false,
+                isSortType: false,
                 cataloguesCheckAll: true,
                 cataloguesIsIndeterminate: false,
                 formatsCheckAll: true,
@@ -73,7 +85,9 @@
                     catalogues: [],
                     formats: [],
                     url: '',
-                    is_dir: "1"
+                    is_dir: "1",
+                    sort: '',
+                    sort_type: ''
                 },
                 rules: {
                     save: [
@@ -101,38 +115,28 @@
         },
         methods: {
             init(init_data) {
-                console.log(init_data)
-                let _this = this;
-                _this.init_data = init_data;
-                if(init_data.types) {
-                    _this.form.type = init_data.types[0].id;
-                }
-                if(init_data.save) {
-                    _this.form.save = init_data.save;
-                }
-                if(init_data.catalogues) {
-                    _this.form.catalogues = init_data.catalogues;
-                    _this.isCatalogues = true;
-                }
-                if(init_data.url || init_data.url === '') {
-                    _this.url = init_data.url;
-                    _this.form.url = init_data.url;
-                    _this.isUrl = true;
-                }
-                if(init_data.formats) {
-                    _this.form.formats = init_data.formats.map(item => {return item.id});
-                    console.log(_this.form.formats);
-                    _this.isFormats = true;
-                }
-                if(init_data.is_dir || init_data.is_dir === 0) {
-                    _this.form.is_dir = init_data.is_dir;
-                    _this.isIsDir = true;
-                }
-                _this.isShowForm = true;
+                console.log(init_data);
+                this.init_data = init_data;
+                this.form.type = init_data.types ? init_data.types[0].id : undefined;
+                this.form.save = init_data.save || undefined;
+                this.isCatalogues = Boolean(init_data.catalogues);
+                this.form.catalogues = init_data.catalogues || undefined;
+                this.isUrl = Boolean(init_data.url || init_data.url === '');
+                this.form.url = this.isUrl ? init_data.url : undefined;
+                this.isSort = Boolean(init_data.sorts || init_data.sorts === '');
+                this.form.sort = this.isSort ? init_data.sorts[0].id : undefined;
+                this.isSortType = Boolean(init_data.sort_types || init_data.sort_types === '');
+                this.form.sort_type = this.isSortType ? init_data.sort_types[0].id : undefined;
+                this.isFormats = Boolean(init_data.formats);
+                this.form.formats = init_data.formats ? init_data.formats.map(item => {return item.id}) : undefined;
+                this.isIsDir = Boolean(init_data.is_dir || init_data.is_dir === 0);
+                this.form.is_dir = this.isIsDir ? init_data.is_dir : undefined;
+                this.isShowForm = true;
             },
-            submit: function () {
-                let _this = this;
-                let _form = this.$refs.form;
+            submit: function (opts) {
+                console.log(this.form);
+                const _this = this;
+                const _form = this.$refs[this.name];
                 _form.validate(function (valid) {
                     if (!valid) return false;
                     _this.$emit('submit',Object(_this.form));

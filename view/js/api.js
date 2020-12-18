@@ -43,6 +43,9 @@ var ApiFileInit = function () {
 var ApiFileSync = function (opts) {
     return request('post',`/file/sync`,opts);
 };
+var ApiFileCatalogue = function (opts) {
+    return request('post',`/file/catalogue`,opts);
+};
 
 function request (method,url,opts) {
     return Axios[method](url,opts).then(function (result) {
@@ -66,5 +69,6 @@ export {
     ApiStoryInit,
     ApiStorySync,
     ApiFileInit,
-    ApiFileSync
+    ApiFileSync,
+    ApiFileCatalogue
 }

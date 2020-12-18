@@ -22,6 +22,16 @@ class cls extends Base{
             update: "下载更新",
             reload: "重新下载"
         };
+        this.sorts = {
+            name: "名称",
+            size: "大小",
+            birthtimeMs: "创建时间",
+            mtimeMs: "修改时间"
+        };
+        this.sort_types = {
+            asc: "升序",
+            desc: "降序"
+        };
     }
 }
 
@@ -90,16 +100,30 @@ cls.prototype.init = async function () {
                 id,
                 name: instance.types[id]
             }
-        })
+        }),
+        sorts: Object.keys(instance.sorts).map(id => {
+            return {
+                id,
+                name: instance.sorts[id]
+            }
+        }),
+        sort_types: Object.keys(instance.sort_types).map(id => {
+            return {
+                id,
+                name: instance.sort_types[id]
+            }
+        }),
     }
 };
 
 cls.prototype.catalogue = async function (ctx) {
-    let body = ctx.request.query,
+    let body = ctx.request.body,
         type = body.type,
         url = body.url,
-        save_path = body.save || `${body.url}/目录.txt`,
-        list = File.dirList(url);
+        sort = body.sort,
+        sort_type = body.sort_type,
+        save_path = (body.save || body.url) + `/目录.txt`,
+        list = File.dirList(url,sort,sort_type);
 
     switch (type) {
         case 'update':
@@ -113,7 +137,7 @@ cls.prototype.catalogue = async function (ctx) {
 cls.prototype.catalogue.settings = {
     params: {
         is_filter: true,
-        query: {
+        body: {
             "type": "object",
             "properties": {
                 "url": {
@@ -124,6 +148,12 @@ cls.prototype.catalogue.settings = {
                 },
                 "type": {
                     "enum": Object.keys(instance.types)
+                },
+                "sort": {
+                    "enum": Object.keys(instance.sorts)
+                },
+                "sort_type": {
+                    "enum": Object.keys(instance.sort_types)
                 }
             },
             "required":["url"]
