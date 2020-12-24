@@ -19,18 +19,6 @@
     import Excel from 'exceljs';
     import {FileBuffer} from '../../js/api';
 
-    const colors = [
-        'rgb(91, 143, 249)',
-        'rgb(90, 216, 166)',
-        'rgb(93, 112, 146)',
-        'rgb(246, 189, 22)',
-        'rgb(232, 104, 74)',
-        'rgb(109, 200, 236)',
-        'rgb(146, 112, 202)',
-        'rgb(255, 157, 77)',
-        'rgb(38, 154, 153)',
-        'rgb(227, 137, 163)'
-    ];
     let container,height,width,graph;
 
     export default {
