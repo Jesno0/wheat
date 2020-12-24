@@ -6,52 +6,56 @@
 
 import Axios from 'axios';
 
-var ApiTaskList = function (id) {
+const ApiTaskList = function (id) {
     return request('get',`/task/list?id=${id}`);
 };
-var ApiTaskRemove = function (id) {
+const ApiTaskRemove = function (id) {
     return request('get',`/task/remove?id=${id}`);
 };
-var ApiTaskStart = function () {
+const ApiTaskStart = function () {
     return request('get',`/task/start`);
 };
-var ApiTaskStop = function () {
+const ApiTaskStop = function () {
     return request('get',`/task/stop`);
 };
 
-var ApiFydtInit = function () {
+const ApiFydtInit = function () {
     return request('get',`/fydt/init`);
 };
-var ApiFydtSync = function (opts) {
+const ApiFydtSync = function (opts) {
     return request('post',`/fydt/sync`,opts);
 };
-var ApiAiShenInit = function () {
+const ApiAiShenInit = function () {
     return request('get',`/aishen/init`);
 };
-var ApiAiShenSync = function (opts) {
+const ApiAiShenSync = function (opts) {
     return request('post',`/aishen/sync`,opts);
 };
-var ApiStoryInit = function () {
+const ApiStoryInit = function () {
     return request('get',`/story/init`);
 };
-var ApiStorySync = function (opts) {
+const ApiStorySync = function (opts) {
     return request('post',`/story/sync`,opts);
 };
-var ApiFileInit = function () {
+const ApiFileInit = function () {
     return request('get',`/file/init`);
 };
-var ApiFileSync = function (opts) {
+const ApiFileSync = function (opts) {
     return request('post',`/file/sync`,opts);
 };
-var ApiFileCatalogue = function (opts) {
+const ApiFileCatalogue = function (opts) {
     return request('post',`/file/catalogue`,opts);
 };
+const FileBuffer = function (path) {
+    return request('request',path,{responseType: 'arraybuffer'});
+}
 
 function request (method,url,opts) {
     return Axios[method](url,opts).then(function (result) {
         if((result.status >= 500) && (result.status <= 600)) return Promise.reject('请重新打开程序');
         if(result.status != 200) return Promise.reject(result);
         result = result.data;
+        if(result.constructor != Object) return result;
         if(result.ok != 0) return Promise.reject(result);
         return result.data;
     });
@@ -70,5 +74,6 @@ export {
     ApiStorySync,
     ApiFileInit,
     ApiFileSync,
-    ApiFileCatalogue
+    ApiFileCatalogue,
+    FileBuffer
 }

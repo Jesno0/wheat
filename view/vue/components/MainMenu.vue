@@ -20,6 +20,9 @@
         <el-menu-item index="/task">
             <span slot="title"><i class="el-icon-finished"/>任务</span>
         </el-menu-item>
+        <el-menu-item index="/timeline">
+            <span slot="title"><i class="el-icon-s-custom"/>时间线</span>
+        </el-menu-item>
         <el-menu-item index="/genealogy">
             <span slot="title"><i class="el-icon-s-custom"/>族谱</span>
         </el-menu-item>

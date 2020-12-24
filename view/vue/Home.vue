@@ -23,6 +23,7 @@
   import File from './components/File.vue'
   import Book from './components/Book.vue'
   import Task from './components/Task.vue'
+  import Timeline from './components/Timeline.vue'
   import Genealogy from './components/Genealogy.vue'
   import Poetry from './components/Poetry.vue'
   import Movie from './components/Movie.vue'
@@ -41,6 +42,7 @@
         {path: '/compress', component: Story},
         {path: '/task', component: Task},
         {path: '/file', component: File},
+        {path: '/timeline', component: Timeline},
         {path: '/genealogy', component: Genealogy},
         {path: '/poetry', component: Poetry},
         {path: '/movie', component: Movie},
