@@ -2,11 +2,17 @@
     <div>
         <div class="content">可在网页中查看大图：<el-link href="/#/timeline" target="_blank">timeline</el-link></div>
         <el-container class="content">
-            <el-button size="small" type="success" native-type="button" @click="initData()">模板数据</el-button>
+            <el-button size="small" type="success" native-type="button" @click="defaultData()">模板数据</el-button>
             <el-upload action="#" :auto-upload="false" :on-change="fileUpload" ref="file" accept=".xlsx">
                 <el-button slot="trigger" size="small" type="primary">自定义数据</el-button>
             </el-upload>
             <el-link :href="default_excel_path" type="info" >下载模板</el-link>
+        </el-container>
+        <el-container class="content">
+            <el-radio-group v-model="is_node_name" @change="initG6Data()">
+                <el-radio :label="1">显示节点名字</el-radio>
+                <el-radio :label="0">隐藏节点名字</el-radio>
+            </el-radio-group>
         </el-container>
         <div class="content" id="container"></div>
     </div>
@@ -27,6 +33,8 @@
             return {
                 default_excel_path: `/view/public/历史时间表.xlsx`,
                 graph_data : {},
+                excel_data : [],
+                is_node_name : 0
             }
         },
         mounted() {
@@ -35,7 +43,7 @@
             height = container.scrollHeight || 500;
             
             this.initG6();
-            this.initData();
+            this.defaultData();
         },
         methods: {
             initG6() {
@@ -118,8 +126,53 @@
                     graph.changeSize(container.scrollWidth, container.scrollHeight);
                 };
             },
-            async initData (file) {
-                const {edges,nodes} = this.graph_data = await this.parseExcel(file);
+            async initG6Data () {
+                const _this = this;
+                const nodes = [];
+                const edges = [];
+                this.excel_data.map((row,i) => {
+                    const color = this.getColor();
+                    const values = row.slice(1,3);
+                    let source;
+                    values.map((node_name,j) => {
+                        if(!node_name) return;
+                        
+                        let node = nodes.find(_n => {return _n.label.split('\n')[0] == node_name;});
+                        if(!node) {
+                            node = {
+                                id: `${i}${j}`,
+                                color,
+                            };
+                            nodes.push(node);
+                        }
+
+                        node.label = node_name;
+                        if(parseInt(_this.is_node_name) || (values.length==1)) {
+                            node.label += `\n${row[0]}`;
+                            if(values.length>1) node.label += ` ${j?'结束':'开始'}`;
+                        }
+
+                        if(j == 0) source = node.id;
+                        if(j == 1) edges.push({
+                            source,
+                            target: node.id,
+                            label: row[0]
+                        });
+                    });
+                });
+                nodes.sort((a,b) => {
+                    const a_name = a.label.split('\n')[0];
+                    const b_name = b.label.split('\n')[0];
+                    if(a_name.indexOf(b_name) == 0) return 1;
+                    if(b_name.indexOf(a_name) == 0) return -1;
+
+                    const a_header = a_name.slice(0,1);
+                    const b_header = b_name.slice(0,1);
+                    if(a_header != b_header) return a_header > b_header ? -1: 1;
+                    if(a_header != 'B') return _this.sortTime(a_name,b_name);
+                    return _this.sortTime(b_name,a_name);
+                });
+
                 const nodeMap = new Map();
                 const horiPadding = 10;
                 const begin = [horiPadding, height * 0.7];
@@ -160,68 +213,34 @@
                     }
                 });
 
-                graph.data(this.graph_data);
+                graph.data({edges,nodes});
                 graph.render();
 
                 return {nodes,edges};
             },
             async parseExcel(file) {
-                file = file || await FileBuffer(this.default_excel_path);
-
+                const _this = this;
                 const workbook = new Excel.Workbook();
                 await workbook.xlsx.load(file);
 
-                const nodes = [];
-                const edges = [];
+                const back = [];
                 workbook.eachSheet((sheet,i) => {
-                    sheet.eachRow((row,j) => {
+                    return sheet.eachRow((row,j) => {
                         if(j==1) return;
-
-                        const color = this.getColor();
-                        let source;
-                        row.values.slice(2,4).map((node_name,k) => {
-                            if(!node_name) return;
-                            
-                            let node = nodes.find(_n => {return _n.label.split('\n')[0] == node_name;});
-
-                            if (node) {
-                                node.label += `\n${row.values[1]} ${k?'结束':'开始'}`;
-                            } else {
-                                node = {
-                                    id: `${j}${k}`,
-                                    label: `${node_name}\n${row.values[1]} ${k?'结束':'开始'}`,
-                                    color,
-                                };
-                                nodes.push(node);
-                            }
-
-                            if(k == 0) source = node.id;
-                            if(k == 1) edges.push({
-                                source,
-                                target: node.id,
-                                label: row.values[1]
-                            });
-                        });
+                        back.push(row.values.slice(1,4));
                     });
                 });
-
-                nodes.sort((a,b) => {
-                    const a_name = a.label.split('\n')[0];
-                    const b_name = b.label.split('\n')[0];
-                    const a_header = a_name.slice(0,1);
-                    const b_header = b_name.slice(0,1);
-                    if(a_header != b_header) return a_name > b_name ? -1: 1;
-                    if(a_header != 'B') return a_name > b_name ? 1: -1;
-                    if(a_name.indexOf(b_name) == 0) return 1;
-                    if(b_name.indexOf(a_name) == 0) return -1;
-                    return a_name > b_name ? -1: 1;
-                });
-
-                return {nodes,edges};
+                return back;
             },
-            fileUpload(opts) {
+            async defaultData () {
+                const file = await FileBuffer(this.default_excel_path);
+                this.excel_data = await this.parseExcel(file);
+                this.initG6Data();
+            },
+            async fileUpload(opts) {
                 this.$refs.file.clearFiles();
-                this.initData(opts.raw);
+                this.excel_data = await this.parseExcel(opts.raw);
+                this.initG6Data();
             },
             getColor () {
                 let color = '#';
@@ -229,6 +248,15 @@
                     color += Math.floor(Math.random()*16).toString(16);
                 }
                 return color;
+            },
+            sortTime(a,b) {
+                const a_arr = a.replace('A.D.','').replace('B.C.','').split('.');
+                const b_arr = b.replace('A.D.','').replace('B.C.','').split('.');
+                if(a_arr[0] != b_arr[0]) return parseInt(a_arr[0]) > parseInt(b_arr[0]) ? 1 : -1;
+                
+                a = a.slice(a_arr[0].length+1);
+                b = b.slice(b_arr[0].length+1);
+                return this.sortTime(a,b);
             }
         }
     };
