@@ -37,6 +37,11 @@ module.exports = {
             url: 'https://webapi.ctfile.com',
             cache: true
         },
+        bornforlove: {
+            url: 'https://mp.weixin.qq.com',
+            url_bak: 'http://mp.weixin.qq.com',
+            cache: true
+        },
         baiduFile: {
             url: 'https://wenku.baidu.com',
             cache: true

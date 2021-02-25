@@ -87,19 +87,22 @@ class cls extends Base {
     }
 }
 
-cls.prototype.catalogue = async function (url) {
-    let html = await this.getHtml(url),back = [];
+cls.prototype.catalogue = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url),back = [];
 
-    if(html.indexOf('<div') > -1) html = html.split('<div class="item-list">')[1].split('</div>')[0];
-    html.replace('<ul>','').replace('</ul>','')
-        .replace(/\<li.*href/g,'').replace(/\<\/a>\<\/li>\n/g,'')
-        .split('="')
-        .map(tr => {
-            if(!tr) return;
-            back.push(tr.split('">'));
-        });
+        if(html.indexOf('<div') > -1) html = html.split('<div class="item-list">')[1].split('</div>')[0];
+        html.replace('<ul>','').replace('</ul>','')
+            .replace(/\<li.*href/g,'').replace(/\<\/a>\<\/li>\n/g,'')
+            .split('="')
+            .map(tr => {
+                if(!tr) return;
+                back.push(tr.split('">'));
+            });
 
-    return back;
+        return back;
+    });
 
     //[
     //  [ '/cat/chuangshiji', '创世记' ],
@@ -107,33 +110,36 @@ cls.prototype.catalogue = async function (url) {
     //]
 };
 
-cls.prototype.resource_list = async function (url) {
-    let html = await this.getHtml(url),infos = [];
+cls.prototype.resource_list = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url),infos = [];
 
-    if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
-    html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
-        .replace(/\<tr.*\>/g,'').split('</tr>')
-        .map(tr => {
-            if(!tr) return;
-            let trr = tr.split('</td>');
-            trr.shift();
-            trr.pop();
-            let name = trr[0].split('</a>')[0].split('>').slice(-1)[0].replace('?','？').replace(/(^\s*)|(\s*$)/g, ''),
-                is_auth = trr[1].indexOf('author') > -1,
-                auth = is_auth ? `-${trr[1].replace(/ /g, '').split('\n').slice(-1)}` : '';
-            infos.push([name+auth]);
-            trr.slice(is_auth?2:1).map(res => {
-                let href_arr = res.split('href="');
-                if(href_arr.length < 2) return;
-                href_arr.map((item,i) => {
-                    if(i == 0) return;
-                    let url = item.split('"')[0],
-                        res_name = url.split('/').slice(-1)[0].split('?')[0];
-                    infos[infos.length-1].push([res_name, url]);
+        if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
+        html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
+            .replace(/\<tr.*\>/g,'').split('</tr>')
+            .map(tr => {
+                if(!tr) return;
+                let trr = tr.split('</td>');
+                trr.shift();
+                trr.pop();
+                let name = trr[0].split('</a>')[0].split('>').slice(-1)[0].replace('?','？').replace(/(^\s*)|(\s*$)/g, ''),
+                    is_auth = trr[1].indexOf('author') > -1,
+                    auth = is_auth ? `-${trr[1].replace(/ /g, '').split('\n').slice(-1)}` : '';
+                infos.push([name+auth]);
+                trr.slice(is_auth?2:1).map(res => {
+                    let href_arr = res.split('href="');
+                    if(href_arr.length < 2) return;
+                    href_arr.map((item,i) => {
+                        if(i == 0) return;
+                        let url = item.split('"')[0],
+                            res_name = url.split('/').slice(-1)[0].split('?')[0];
+                        infos[infos.length-1].push([res_name, url]);
+                    });
                 });
             });
-        });
-    return infos;
+        return infos;
+    });
 
     //[
     //    [ '敌基督：新约惟一一个自称为神的人-张熙和牧师',
@@ -145,18 +151,21 @@ cls.prototype.resource_list = async function (url) {
     //]
 };
 
-cls.prototype.music_catalogue = async function (url) {
-    let html = await this.getHtml(url);
-    if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
-    return Ut.noRepeat(html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
-        .replace(/\<tr.*\>/g,'').split('</tr>')
-        .map(tr => {
-            if (tr) return tr.split('</td>')[0]
-                .split('href="')[1]
-                .replace('</a>','')
-                .trim()
-                .split('">');
-        }));
+cls.prototype.music_catalogue = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url);
+        if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
+        return Ut.noRepeat(html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
+            .replace(/\<tr.*\>/g,'').split('</tr>')
+            .map(tr => {
+                if (tr) return tr.split('</td>')[0]
+                    .split('href="')[1]
+                    .replace('</a>','')
+                    .trim()
+                    .split('">');
+            }));
+    });
 
     //[
     //    [ '/content/xizaiquannengzhedeyinxia', '安息在全能者的荫下' ]
@@ -164,12 +173,15 @@ cls.prototype.music_catalogue = async function (url) {
     //]
 };
 
-cls.prototype.resource_detail = async function (url) {
-    let html = await this.getHtml(url).catch(() => {});
-    return html ? html.split('class="file"').slice(1).map(tr => {
-        let url = tr.split('href="')[1].split('"')[0];
-        return [Path.basename(url).split('?')[0],url]
-    }) : [];
+cls.prototype.resource_detail = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url).catch(() => {});
+        return html ? html.split('class="file"').slice(1).map(tr => {
+            let url = tr.split('href="')[1].split('"')[0];
+            return [Path.basename(url).split('?')[0],url]
+        }) : [];
+    });
 
     //[
     //    [ 'S03_010.mp3',
@@ -181,23 +193,26 @@ cls.prototype.resource_detail = async function (url) {
     //]
 };
 
-cls.prototype.book_catalogue = async function (url) {
-    let html = await this.getHtml(url).catch(() => {});
-    if(!html) return [];
+cls.prototype.book_catalogue = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url).catch(() => {});
+        if(!html) return [];
 
-    let arr = html.split('views-fluid-grid-list')[1].split('tbody')[0].split('</li>');
-    arr.pop();
-    let blank_list = arr.map(item => {
-        return [null,item.split('<h6')[1].split('</a>')[0].split('<a')[1].split('>')[1]];
+        let arr = html.split('views-fluid-grid-list')[1].split('tbody')[0].split('</li>');
+        arr.pop();
+        let blank_list = arr.map(item => {
+            return [null,item.split('<h6')[1].split('</a>')[0].split('<a')[1].split('>')[1]];
+        });
+
+        arr = html.split('<tbody>')[1].split('</tbody>')[0].split('</tr>');
+        arr.pop();
+        let catalogue_list = arr.map(item => {
+            return item.split('</a>')[0].split('href="')[1].split('">');
+        });
+
+        return catalogue_list.concat(blank_list);
     });
-
-    arr = html.split('<tbody>')[1].split('</tbody>')[0].split('</tr>');
-    arr.pop();
-    let catalogue_list = arr.map(item => {
-        return item.split('</a>')[0].split('href="')[1].split('">');
-    });
-
-    return catalogue_list.concat(blank_list);
 
     //[
     //    [ '/content/duyidewanquanren', '独一的完全人' ],
@@ -205,22 +220,25 @@ cls.prototype.book_catalogue = async function (url) {
     //]
 };
 
-cls.prototype.book_list = async function (url) {
-    let html = await this.getHtml(url).catch(() => {});
-    if(!html || html.indexOf('tbody') < 0) return [];
+cls.prototype.book_list = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url).catch(() => {});
+        if(!html || html.indexOf('tbody') < 0) return [];
 
-    let auth = html.split('field-item even">')[1].split('<')[0];
-    let arr = html.split('tbody')[1].split('</tr>');
-    arr.pop();
-    return arr.map(item => {
-        let str = item.split('href="')[1],
-            path = str.split('"')[0],
-            name = str.split('>')[1].split('<')[0],
-            title = str.split('<td')[1].split('>')[1].split('</td')[0];
+        let auth = html.split('field-item even">')[1].split('<')[0];
+        let arr = html.split('tbody')[1].split('</tr>');
+        arr.pop();
+        return arr.map(item => {
+            let str = item.split('href="')[1],
+                path = str.split('"')[0],
+                name = str.split('>')[1].split('<')[0],
+                title = str.split('<td')[1].split('>')[1].split('</td')[0];
 
-        return [
-            `${title}-${auth}`,[name,path]
-        ]
+            return [
+                `${title}-${auth}`,[name,path]
+            ]
+        });
     });
 
     //[
@@ -239,14 +257,17 @@ cls.prototype.book_list = async function (url) {
     //]
 };
 
-cls.prototype.faq_catalogue = async function (url) {
-    let html = await this.getHtml(url).catch(() => {});
-    if(!html) return [];
+cls.prototype.faq_catalogue = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url).catch(() => {});
+        if(!html) return [];
 
-    let arr = html.split('item-list')[1].split('</ul>')[0].split('<li class="">');
-    arr.shift();
-    return arr.map(item => {
-        return item.split('href="')[1].split('</a>')[0].split('">');
+        let arr = html.split('item-list')[1].split('</ul>')[0].split('<li class="">');
+        arr.shift();
+        return arr.map(item => {
+            return item.split('href="')[1].split('</a>')[0].split('">');
+        });
     });
 
     //[
@@ -255,14 +276,17 @@ cls.prototype.faq_catalogue = async function (url) {
     //]
 };
 
-cls.prototype.faq_list = async function (url) {
-    let html = await this.getHtml(url).catch(() => {});
-    if(!html) return [];
+cls.prototype.faq_list = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url).catch(() => {});
+        if(!html) return [];
 
-    let arr = html.split('class="node-title"');
-    arr.shift();
-    return arr.map(item => {
-        return item.split('href="')[1].split('</a>')[0].split('">');
+        let arr = html.split('class="node-title"');
+        arr.shift();
+        return arr.map(item => {
+            return item.split('href="')[1].split('</a>')[0].split('">');
+        });
     });
 
     //[
@@ -273,19 +297,22 @@ cls.prototype.faq_list = async function (url) {
     //]
 };
 
-cls.prototype.faq_detail = async function (url) {
-    let html = await this.getHtml(url).catch(() => {});
-    if(!html) return [];
+cls.prototype.faq_detail = async function (url,is_cache) {
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.getHtml(url).catch(() => {});
+        if(!html) return [];
 
-    let title = html.split('page-title">')[1].split('<')[0];
-    return [
-        `${title}.txt`,
-        `${title}\n\n问:\n`
-            + html.split('class="pane-content"').slice(1,3).map(item => {
-                let str = item.split('</span>')[0];
-                return str.slice(str.lastIndexOf('>')+1);
-            }).join('\n\n答:\n')
-    ];
+        let title = html.split('page-title">')[1].split('<')[0];
+        return [
+            `${title}.txt`,
+            `${title}\n\n问:\n`
+                + html.split('class="pane-content"').slice(1,3).map(item => {
+                    let str = item.split('</span>')[0];
+                    return str.slice(str.lastIndexOf('>')+1);
+                }).join('\n\n答:\n')
+        ];
+    });
 
     //[
     //    '（太15：11），“入口的不能污秽人”，是否表示可以随便乱吃东西？ .txt',

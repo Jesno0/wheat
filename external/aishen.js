@@ -4,8 +4,7 @@
  *
  */
 
-const crypto = require('crypto'),
-    Frame = require('koa2frame'),
+const Frame = require('koa2frame'),
     Err = Frame.error,
     Base = require('./base');
 
@@ -60,60 +59,65 @@ class cls extends Base {
     }
 }
 
-cls.prototype.resource_list = async function (par_id,cls_id) {
-    let back = [],
-        page_num = 0,
-        page_count = 1;
+cls.prototype.resource_list = async function (par_id,cls_id,is_cache) {
+    const url = '/CsAjax.do';
+    const _this = this;
+    return this.orCache(is_cache, url, {par_id,cls_id}, async function() {
+        let back = [],
+            page_num = 0,
+            page_count = 1;
 
-    while(page_num < page_count) {
-        let data = await this.request('post','/CsAjax.do',{
-            headers: {
-                //Host: 'www.aishen360.com',
-                //'Content-Type': 'application/x-www-form-urlencoded',
-                //Cookie: '_gads=ID=906c4e15554ae12f:T=1585615024:S=ALNI_Mab3Rv5JKAnODYbKcMmRNbb4BpE6Q; _ga=GA1.2.154594386.1585615027; _gid=GA1.2.1461507691.1585615028; isEnabledCookie=true; JSESSIONID=abcSM7nQLWxVYgndHOVex; Hm_lvt_ada9039d77ee056bd43572b93c9b8b08=1585615028,1585642087; COOKIE_IS_ENABLED_COOKIE=abcSM7nQLWxVYgndHOVex; Hm_lpvt_ada9039d77ee056bd43572b93c9b8b08=1585699960; __atuvc=74%7C14; __atuvs=5e83d90e0a1544a700b'
-                Cookie:'JSESSIONID=abcSM7nQLWxVYgndHOVex; COOKIE_IS_ENABLED_COOKIE=abcSM7nQLWxVYgndHOVex; '
-            },
-            query: {
-                method: 'getBookListCommon'
-            },
-            body: {
-                par_id,
-                cls_id,
-                page_num
-            }
-        }).catch(result => {
-            if(result.ok == '1') return result.data;
-            return Promise.reject(result);
-        });
-
-        if(!data.records) console.log(data,par_id,page_num);
-        back = back.concat(data.records
-            .filter(function(item) {
-                return item.state == 'Completed'
-            }).map(item => {
-                return {
-                    name: item.bName,
-                    auth: item.aName,
-                    url: item.bUrl,
-                    cat: item.cat
+        while(page_num < page_count) {
+            let data = await _this.request('post',url,{
+                headers: {
+                    Cookie:'JSESSIONID=abcSM7nQLWxVYgndHOVex; COOKIE_IS_ENABLED_COOKIE=abcSM7nQLWxVYgndHOVex; '
+                },
+                query: {
+                    method: 'getBookListCommon'
+                },
+                body: {
+                    par_id,
+                    cls_id,
+                    page_num
                 }
-            }));
-        if(page_num == 0) page_count = data.pageNum;
-        page_num ++;
-    }
+            }).catch(result => {
+                if(result.ok == '1') return result.data;
+                return Promise.reject(result);
+            });
 
-    return back;
+            if(!data.records) console.log(data,par_id,page_num);
+            back = back.concat(data.records
+                .filter(function(item) {
+                    return item.state == 'Completed'
+                }).map(item => {
+                    return {
+                        name: item.bName,
+                        auth: item.aName,
+                        url: item.bUrl,
+                        cat: item.cat
+                    }
+                }));
+            if(page_num == 0) page_count = data.pageNum;
+            page_num ++;
+        }
+
+        return back;
+    });
 };
 
-cls.prototype.resource_id = async function (url) {
-    let html = await this.get(`/download/${url}.html`, null, 'html');
-    return html.split('/file/').slice(1,3).map(item => {
-        let arr = item.slice(0,item.indexOf('"')).split('-');
-        return {
-            uid: arr[0],
-            fid: arr[1]
-        }
-    })
+cls.prototype.resource_id = async function (url,is_cache) {
+    url = `/download/${url}.html`;
+    const _this = this;
+    return this.orCache(is_cache, url, null, async function() {
+        let html = await _this.get(url, null, 'html');
+        return html.split('/file/').slice(1,3).map(item => {
+            let arr = item.slice(0,item.indexOf('"')).split('-');
+            return {
+                uid: arr[0],
+                fid: arr[1]
+            }
+        });
+    });
 };
 
 module.exports = new cls();

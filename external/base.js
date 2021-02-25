@@ -21,48 +21,46 @@ class cls extends Base {
         super(name);
         this.cache = this.info && this.info.cache; //可在程序中设置
     }
+}
 
-    /**
-     * 加入缓存写入
-     * 根据etc配置设置是否写入缓存，根据this.cache值设置是否读取缓存值
-     * @param method
-     * @param api
-     * @param info
-     * @param back_format
-     * @param err_msg
-     * @param oks 设置可过滤的ok值，使其不会报错
-     * @returns {*}
-     */
-    async request(method,api,info,back_format,err_msg,oks) {
-        let file_path = '',name = '',root = '',back;
-        if(this.info && this.info.cache) {
-            name = (back_format == 'html')
-                ? Ut.fixFileName(api)
-                : crypto.createHash('md5').update(api+JSON.stringify(info)).digest("hex");
-            if(name.indexOf('.html') < 0) name += '.html';
-            root = Path.resolve(__dirname, `../view/cache/${this.name}`);
-            file_path = `${root}/${name}`;
-        }
-        if (this.cache && Fs.existsSync(file_path)) {
-            back = Fs.readFileSync(file_path, 'utf-8');
-            if(back) {
-                try { return JSON.parse(back);}
-                catch (err) {return back;}
-            }
-        }
+cls.prototype.orCache = async function(is_cache,url,params,getDataFunc) {
+    let data;
+    is_cache = FrameUt.isValue(is_cache) ? is_cache : this.cache;
+    if(is_cache) data = this.getCache(url,params);
+    if(data) return data;
 
-        back = await super.request(method, api, info, back_format, err_msg).catch(result => {
-            if (oks && oks.indexOf(result.ok)>-1) return result.data;
-            else if((result.ok == 503) && (result.msg == "require for verifycode")) return this.request(method,api,info,back_format,err_msg,oks);
-            return Promise.reject(result);
-        });
-        if (this.info && this.info.cache && back) {
-            Ut.mkdirs(root);
-            if(back.constructor != String) Fs.writeFileSync(file_path, JSON.stringify(back));
-            else Fs.writeFileSync(file_path, back);
-        }
-        return back;
+    data = await getDataFunc();
+    if(this.cache) this.saveCache(url,params,data);
+    return data;
+}
+
+cls.prototype.saveCache = function (url,params,data) {
+    if(!FrameUt.isValue(data)) return;
+    try {data = JSON.stringify(data);}catch(err) {return};
+
+    const file_path = this.getCachePath(url,params);
+    Fs.writeFileSync(file_path, data);
+}
+
+cls.prototype.getCache = function (url,params) {
+    const file_path = this.getCachePath(url,params);
+
+    const data = Fs.existsSync(file_path) && Fs.readFileSync(file_path, 'utf-8');
+    if(FrameUt.isValue(data)) {
+        try { return JSON.parse(data);}
+        catch (err) {}
     }
+}
+
+cls.prototype.getCachePath = function (url,params) {
+    const root = Path.resolve(__dirname, `../view/cache/${this.name}`);
+    Ut.mkdirs(root);
+
+    let file_name = Ut.fixFileName(url);
+    if(params) file_name += crypto.createHash('md5').update(JSON.stringify(params)).digest("hex")
+    file_name += '.json';
+
+    return `${root}/${file_name}`;
 }
 
 cls.downResource = async function (url,save) {

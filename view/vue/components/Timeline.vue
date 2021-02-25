@@ -46,6 +46,7 @@
             this.defaultData();
         },
         methods: {
+            /** 初始化G6容器 */
             initG6() {
                 const _this = this;
                 graph = new G6.Graph({
@@ -126,6 +127,7 @@
                     graph.changeSize(container.scrollWidth, container.scrollHeight);
                 };
             },
+            /** 初始化G6填充内容｛nodes,edges｝ */
             async initG6Data () {
                 const _this = this;
                 const nodes = [];
@@ -153,7 +155,7 @@
                         }
 
                         if(j == 0) source = node.id;
-                        if(j == 1) edges.push({
+                        if(source && j == 1) edges.push({
                             source,
                             target: node.id,
                             label: row[0]
@@ -218,6 +220,7 @@
 
                 return {nodes,edges};
             },
+            /** 解析excel表格，获取二维数组 */
             async parseExcel(file) {
                 const _this = this;
                 const workbook = new Excel.Workbook();
