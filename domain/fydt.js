@@ -42,10 +42,13 @@ cls.prototype.async = async function (check_list) {
  ]
  */
 cls.prototype.check = function (resource_info,save_path,formats,reload) {
-    let back = [];
+    const back = [];
 
-    for(let i=0; i<resource_info.length; i++) {
-        let info = resource_info[i];
+    let i = 0;
+    for(let info of resource_info) {
+        if(++i == 46) {
+            console.log(info);
+        }
         for (let j = 1; j < info.length; j++) {
             let res = info[j],
                 old_name_full = res[0],
@@ -55,9 +58,9 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
             if (formats.indexOf(type) < 0) continue;
 
             let new_name = info[0],
-                auth_index = new_name.lastIndexOf('-'),
+                auth_index = new_name.lastIndexOf('~~'),
                 title = Ut.fixFileName((auth_index>-1) ? new_name.slice(0, auth_index) : new_name),
-                auth = (auth_index>-1) ? '-'+new_name.slice(auth_index + 1) : '',
+                auth = (auth_index>-1) ? '~~'+new_name.slice(auth_index + 1) : '',
                 version = '';
 
             if(type == 'doc') {
@@ -93,17 +96,17 @@ cls.prototype.check = function (resource_info,save_path,formats,reload) {
 }]
  */
 
-cls.prototype.getResourceList = async function (catalogues) {
+cls.prototype.getResourceList = async function (catalogues,is_cache) {
     let i,name,cat,back = [];
     for(i=0; i< catalogues.length; i++) {
         name = catalogues[i];
         cat = Fydt.catalogues[name];
         let type_info = Object.assign({name}, cat);
-        if (type_info) back = back.concat(await circle(type_info));
+        if (type_info) back = back.concat(await circle(type_info,null,is_cache));
     }
     return back;
 
-    async function circle (type_info,save) {
+    async function circle (type_info,save,is_cache) {
         let urls = type_info.url;
         if(!urls) return;
         if(urls.constructor != Array) urls = [urls];
@@ -121,13 +124,13 @@ cls.prototype.getResourceList = async function (catalogues) {
                 if(!type_info.children) break;
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     for (j = 0; j < infos.length; j++) {
                         info = infos[j];
                         let children = await circle(Object.assign({
                             url: info[0],
                             name: info[1]
-                        }, type_info.children), save);
+                        }, type_info.children), save, is_cache);
                         resources = resources.concat(children);
                     }
                 }
@@ -135,7 +138,7 @@ cls.prototype.getResourceList = async function (catalogues) {
             case Fydt.types.resource_list:
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     resources = resources.concat(infos);
                 }
                 return [{save,resources}];
@@ -143,13 +146,13 @@ cls.prototype.getResourceList = async function (catalogues) {
                 if(!type_info.children) return [];
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     for (j = 0; j < infos.length; j++) {
                         info = infos[j];
                         let children = await circle(Object.assign({
                             url: info[0],
                             name: info[1]
-                        }, type_info.children), save);
+                        }, type_info.children), save, is_cache);
                         resources = resources.concat(children[0].resources);
                     }
                 }
@@ -157,7 +160,7 @@ cls.prototype.getResourceList = async function (catalogues) {
             case Fydt.types.resource_detail:
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     resources.push([name].concat(infos));
                 }
                 return [{save,resources}];
@@ -165,14 +168,14 @@ cls.prototype.getResourceList = async function (catalogues) {
                 if(!type_info.children) return [];
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     for (j = 0; j < infos.length; j++) {
                         info = infos[j];
                         if(!info[0]) continue;
                         let children = await circle(Object.assign({
                             url: info[0],
                             name: info[1]
-                        }, type_info.children), save);
+                        }, type_info.children), save, is_cache);
                         resources = resources.concat(children[0].resources);
                     }
                 }
@@ -181,14 +184,14 @@ cls.prototype.getResourceList = async function (catalogues) {
                 if(!type_info.children) return [];
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     for (j = 0; j < infos.length; j++) {
                         info = infos[j];
                         if(!info[0]) continue;
                         let children = await circle(Object.assign({
                             url: info[0],
                             name: info[1]
-                        }, type_info.children), save);
+                        }, type_info.children), save, is_cache);
                         resources = resources.concat(children[0].resources);
                     }
                 }
@@ -196,7 +199,7 @@ cls.prototype.getResourceList = async function (catalogues) {
             case Fydt.types.faq_detail:
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     resources.push([name,infos]);
                 }
                 return [{save,resources}];
@@ -204,14 +207,14 @@ cls.prototype.getResourceList = async function (catalogues) {
                 if(!type_info.children) return [];
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     for (j = 0; j < infos.length; j++) {
                         info = infos[j];
                         if(!info[0]) continue;
                         let children = await circle(Object.assign({
                             url: info[0],
                             name: info[1]
-                        }, type_info.children), save);
+                        }, type_info.children), save, is_cache);
                         resources = resources.concat(children[0].resources);
                     }
                 }
@@ -219,7 +222,7 @@ cls.prototype.getResourceList = async function (catalogues) {
             case Fydt.types.book_list:
                 for(i=0; i< urls.length; i++) {
                     url = urls[i];
-                    infos = await Fydt[type](url);
+                    infos = await Fydt[type](url,is_cache);
                     resources = resources.concat(infos);
                 }
                 return [{save,resources}];

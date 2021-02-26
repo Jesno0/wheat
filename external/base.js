@@ -36,18 +36,27 @@ cls.prototype.orCache = async function(is_cache,url,params,getDataFunc) {
 
 cls.prototype.saveCache = function (url,params,data) {
     if(!FrameUt.isValue(data)) return;
-    try {data = JSON.stringify(data);}catch(err) {return};
+    try {JSON.stringify(data);}catch(err) {return};
 
-    const file_path = this.getCachePath(url,params);
-    Fs.writeFileSync(file_path, data);
+    const {file_path,info_key} = this.getCachePath(url,params);
+    if(!info_key) {
+        Fs.writeFileSync(file_path, JSON.stringify(data));
+    } else {
+        const content = Fs.existsSync(file_path) ? JSON.parse(Fs.readFileSync(file_path, 'utf-8')) : {};
+        content[info_key] = data;
+        Fs.writeFileSync(file_path, JSON.stringify(content));
+    }
 }
 
 cls.prototype.getCache = function (url,params) {
-    const file_path = this.getCachePath(url,params);
+    const {file_path,info_key} = this.getCachePath(url,params);
 
-    const data = Fs.existsSync(file_path) && Fs.readFileSync(file_path, 'utf-8');
-    if(FrameUt.isValue(data)) {
-        try { return JSON.parse(data);}
+    const content = Fs.existsSync(file_path) && Fs.readFileSync(file_path, 'utf-8');
+    if(FrameUt.isValue(content)) {
+        try { 
+            const data = JSON.parse(content);
+            return FrameUt.isValue(info_key) ? data[info_key] : data;
+        }
         catch (err) {}
     }
 }
@@ -56,11 +65,15 @@ cls.prototype.getCachePath = function (url,params) {
     const root = Path.resolve(__dirname, `../view/cache/${this.name}`);
     Ut.mkdirs(root);
 
-    let file_name = Ut.fixFileName(url);
+    const url_info = url.split('::');
+    let file_name = Ut.fixFileName(url_info[0]);
     if(params) file_name += crypto.createHash('md5').update(JSON.stringify(params)).digest("hex")
     file_name += '.json';
 
-    return `${root}/${file_name}`;
+    return {
+        file_path: `${root}/${file_name}`,
+        info_key: url_info[1] && Ut.fixFileName(url_info[1])
+    };
 }
 
 cls.downResource = async function (url,save) {

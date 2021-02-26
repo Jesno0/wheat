@@ -90,18 +90,17 @@ class cls extends Base {
 cls.prototype.catalogue = async function (url,is_cache) {
     const _this = this;
     return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url),back = [];
+        const html = await _this.getHtml(url);
 
-        if(html.indexOf('<div') > -1) html = html.split('<div class="item-list">')[1].split('</div>')[0];
-        html.replace('<ul>','').replace('</ul>','')
-            .replace(/\<li.*href/g,'').replace(/\<\/a>\<\/li>\n/g,'')
-            .split('="')
-            .map(tr => {
-                if(!tr) return;
-                back.push(tr.split('">'));
-            });
-
-        return back;
+        return html.split('pane-content').slice(-1)[0]
+                    .split('</ul>')[0].split('<ul')[1]
+                    .split('href="').slice(1)
+                    .map(item => {
+                        return [
+                            item.split('"')[0],
+                            item.split('>')[1].split('<')[0]
+                        ]
+                    });
     });
 
     //[
@@ -112,33 +111,33 @@ cls.prototype.catalogue = async function (url,is_cache) {
 
 cls.prototype.resource_list = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url),infos = [];
+    return this.orCache(is_cache, `resource_list::${url}`, null, async function() {
+        const html = await _this.getHtml(url);
+        if(!html.includes('<tbody>')) return [];
 
-        if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
-        html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
-            .replace(/\<tr.*\>/g,'').split('</tr>')
-            .map(tr => {
-                if(!tr) return;
-                let trr = tr.split('</td>');
-                trr.shift();
-                trr.pop();
-                let name = trr[0].split('</a>')[0].split('>').slice(-1)[0].replace('?','？').replace(/(^\s*)|(\s*$)/g, ''),
-                    is_auth = trr[1].indexOf('author') > -1,
-                    auth = is_auth ? `-${trr[1].replace(/ /g, '').split('\n').slice(-1)}` : '';
-                infos.push([name+auth]);
-                trr.slice(is_auth?2:1).map(res => {
-                    let href_arr = res.split('href="');
-                    if(href_arr.length < 2) return;
-                    href_arr.map((item,i) => {
-                        if(i == 0) return;
-                        let url = item.split('"')[0],
-                            res_name = url.split('/').slice(-1)[0].split('?')[0];
-                        infos[infos.length-1].push([res_name, url]);
+        return html.split('<tbody')[1].split('</tbody')[0]
+                    .split('</tr>').slice(0,-1)
+                    .map(tr => {
+                        const tds = tr.split('</td>').slice(1,-1);
+                        const name = tds[0].split('href="')[1].split('>')[1].split('<')[0].replace('?','？').replace(/(^\s*)|(\s*$)/g, '');
+                        const is_auth = tds[1].includes('author');
+                        const auth = is_auth 
+                                        ? `~~${tds[1].split('>').slice(-1)[0].split('\n')[1].replace(/ /g, '')}`
+                                        : '';
+
+                        return [
+                            name + auth,
+                            ...(tds.slice(is_auth?2:1).map(td => {
+                                const hrefs = td.split('href="').slice(1);
+                                if(hrefs.length) return hrefs.map(href => {
+                                    return [
+                                        href.split('"')[0].split('?')[0].split('/').slice(-1)[0],
+                                        href.split('"')[0]
+                                    ];
+                                }).flat();
+                            }).filter(x=>x))
+                        ]
                     });
-                });
-            });
-        return infos;
     });
 
     //[
@@ -153,18 +152,16 @@ cls.prototype.resource_list = async function (url,is_cache) {
 
 cls.prototype.music_catalogue = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url);
-        if(html.indexOf('<tbody>') > -1) html = html.slice(html.indexOf('<tbody>'),html.indexOf('</tbody>'));
-        return Ut.noRepeat(html.slice(html.indexOf('<tr'),html.lastIndexOf('</tr>'))
-            .replace(/\<tr.*\>/g,'').split('</tr>')
-            .map(tr => {
-                if (tr) return tr.split('</td>')[0]
-                    .split('href="')[1]
-                    .replace('</a>','')
-                    .trim()
-                    .split('">');
-            }));
+    return this.orCache(is_cache,`music_catalogue::${url}`, null, async function() {
+        const html = await _this.getHtml(url);
+        if(!html.includes('<tbody>')) return [];
+        return html.split('<tbody')[1].split('/tbody')[0]
+                    .split('</tr').slice(0,-1).map(tr => {
+                        return [
+                            tr.split('href="')[1].split('">')[0],
+                            tr.split('href="')[1].split('>')[1].split('<')[0]
+                        ];
+                    }).filter(x=>x);
     });
 
     //[
@@ -175,11 +172,14 @@ cls.prototype.music_catalogue = async function (url,is_cache) {
 
 cls.prototype.resource_detail = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url).catch(() => {});
+    return this.orCache(is_cache,`resource_detail::${url}`, null, async function() {
+        const html = await _this.getHtml(url).catch(() => {});
         return html ? html.split('class="file"').slice(1).map(tr => {
-            let url = tr.split('href="')[1].split('"')[0];
-            return [Path.basename(url).split('?')[0],url]
+            const url = tr.split('href="')[1].split('"')[0];
+            return [
+                Path.basename(url).split('?')[0],
+                url
+            ]
         }) : [];
     });
 
@@ -196,22 +196,21 @@ cls.prototype.resource_detail = async function (url,is_cache) {
 cls.prototype.book_catalogue = async function (url,is_cache) {
     const _this = this;
     return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url).catch(() => {});
+        const html = await _this.getHtml(url).catch(() => {});
         if(!html) return [];
 
-        let arr = html.split('views-fluid-grid-list')[1].split('tbody')[0].split('</li>');
-        arr.pop();
-        let blank_list = arr.map(item => {
-            return [null,item.split('<h6')[1].split('</a>')[0].split('<a')[1].split('>')[1]];
-        });
+        const blank_list = html.split('views-fluid-grid-list')[1].split('tbody')[0]
+                        .split('</li>').slice(0,-1)
+                        .map(item => {
+                            return [null,item.split('</a>').slice(-2)[0].split('>').slice(-1)[0]];
+                        });
 
-        arr = html.split('<tbody>')[1].split('</tbody>')[0].split('</tr>');
-        arr.pop();
-        let catalogue_list = arr.map(item => {
-            return item.split('</a>')[0].split('href="')[1].split('">');
-        });
+        const catalogue_list = html.split('<tbody>')[1].split('</tbody>')[0]
+                    .split('</tr>').slice(0,-1).map(item => {
+                        return item.split('href="')[1].split('<')[0].split('">');
+                    });
 
-        return catalogue_list.concat(blank_list);
+        return [...catalogue_list,...blank_list];
     });
 
     //[
@@ -222,21 +221,19 @@ cls.prototype.book_catalogue = async function (url,is_cache) {
 
 cls.prototype.book_list = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url).catch(() => {});
+    return this.orCache(is_cache,`book_list::${url}`, null, async function() {
+        const html = await _this.getHtml(url).catch(() => {});
         if(!html || html.indexOf('tbody') < 0) return [];
 
-        let auth = html.split('field-item even">')[1].split('<')[0];
-        let arr = html.split('tbody')[1].split('</tr>');
-        arr.pop();
-        return arr.map(item => {
-            let str = item.split('href="')[1],
+        const auth = html.split('field-item even">')[1].split('<')[0];
+        return html.split('tbody')[1].split('</tr>').slice(0,-1).map(item => {
+            const str = item.split('href="')[1],
                 path = str.split('"')[0],
                 name = str.split('>')[1].split('<')[0],
                 title = str.split('<td')[1].split('>')[1].split('</td')[0];
 
             return [
-                `${title}-${auth}`,[name,path]
+                `${title}~~${auth}`,[name,path]
             ]
         });
     });
@@ -260,14 +257,14 @@ cls.prototype.book_list = async function (url,is_cache) {
 cls.prototype.faq_catalogue = async function (url,is_cache) {
     const _this = this;
     return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url).catch(() => {});
+        const html = await _this.getHtml(url).catch(() => {});
         if(!html) return [];
 
-        let arr = html.split('item-list')[1].split('</ul>')[0].split('<li class="">');
-        arr.shift();
-        return arr.map(item => {
-            return item.split('href="')[1].split('</a>')[0].split('">');
-        });
+        return html.split('item-list')[1].split('</ul>')[0]
+                    .split('<li class="">').slice(1)
+                    .map(item => {
+                        return item.split('href="')[1].split('<')[0].split('">');
+                    });
     });
 
     //[
@@ -278,12 +275,21 @@ cls.prototype.faq_catalogue = async function (url,is_cache) {
 
 cls.prototype.faq_list = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url).catch(() => {});
+    return this.orCache(is_cache,`faq_list::${url}`, null, async function() {
+        const html = await _this.getHtml(url).catch(() => {});
         if(!html) return [];
 
-        let arr = html.split('class="node-title"');
-        arr.shift();
+        const arr = html.split('class="node-title"').slice(1);
+
+        const urls = html.split('pager-item').slice(1).map(page=> {
+            return page.split('href="')[1].split('>')[0];
+        });
+
+        for(let _url of urls.values()) {
+            const _html = await _this.getHtml(_url).catch(() => {});
+            arr.push(..._html.split('class="node-title"').slice(1));
+        }
+        
         return arr.map(item => {
             return item.split('href="')[1].split('</a>')[0].split('">');
         });
@@ -299,17 +305,18 @@ cls.prototype.faq_list = async function (url,is_cache) {
 
 cls.prototype.faq_detail = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.getHtml(url).catch(() => {});
+    return this.orCache(is_cache, `faq_detail::${url}`, null, async function() {
+        const html = await _this.getHtml(url).catch(() => {});
         if(!html) return [];
 
-        let title = html.split('page-title">')[1].split('<')[0];
+        const title = html.split('page-title">')[1].split('<')[0];
         return [
             `${title}.txt`,
             `${title}\n\n问:\n`
-                + html.split('class="pane-content"').slice(1,3).map(item => {
-                    let str = item.split('</span>')[0];
-                    return str.slice(str.lastIndexOf('>')+1);
+                + html.split('pane-content').slice(1,3).map(item => {
+                    return item.split('panel-separator')[0].split('</span>').slice(0,-1).map(sp => {
+                        if(sp) return sp.split('>').slice(-1);
+                    }).filter(x=>x).join('\n');
                 }).join('\n\n答:\n')
         ];
     });

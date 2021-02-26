@@ -52,7 +52,7 @@ cls.prototype.project_list = async function(url,is_cache) {
 
 cls.prototype.project_detail = async function(url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
+    return this.orCache(is_cache, `project_detail::${url}`, null, async function() {
         const html = await _this.getHtml(url,is_cache);
         const vid = html.split('</iframe>')[0].split('<iframe')[1].split('data-src')[1].split('vid=')[1].split('"')[0];
         const result = await _this.get('/mp/videoplayer',{
@@ -76,7 +76,7 @@ cls.prototype.picture_list = async function (url,is_cache) {
 
 cls.prototype.picture_detail = async function (url,is_cache) {
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
+    return this.orCache(is_cache, `picture_detail::${url}`, null, async function() {
         const html = await _this.getHtml(url,is_cache);
         const title_arr = html.split('id="activity-name"')[1].split('>')[1].split('<')[0].split('《')[1].split('》');
         const key = title_arr[1].slice(0,1);

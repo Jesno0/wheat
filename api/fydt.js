@@ -13,7 +13,10 @@ const Frame = require('koa2frame'),
 class cls extends Base{
     constructor () {
         super();
-        
+        this.is_cache = {
+            "1": "1",
+            "0": "0"
+        }
         this.formats = {
             doc: "文档",
             audio: "音频"
@@ -29,20 +32,17 @@ class cls extends Base{
 let instance = new cls();
 
 cls.prototype.sync = async function (ctx) {
-    let body = ctx.body,
-        cats = await Fydt.getResourceList(body.catalogues),
-        save_path = body.save,
-        formats = body.formats,
-        type = body.type,
-        i, resources, save,
-        list = [];
-
+    const {catalogues,is_cache,formats,type} = ctx.body;
+    const cats = await Fydt.getResourceList(catalogues,parseInt(is_cache));
+    
+    let save_path = ctx.body.save;
     if(save_path.slice(save_path.length-1) == '/')
         save_path = save_path.slice(0,save_path.length-1);
-
-    for(i=0; i<cats.length; i++) {
-        resources = cats[i].resources;
-        save = `${save_path}${cats[i].save}`;
+    
+    let list = [];
+    for(let cat of cats) {
+        const resources = cat.resources;
+        const save = `${save_path}${cat.save}`;
         list = list.concat(await Fydt.check(resources,save,formats,type=='reload'));
     }
 
@@ -83,6 +83,9 @@ cls.prototype.sync.settings = {
                     "items": {
                         "enum": Object.keys(instance.formats)
                     }
+                },
+                "is_cache": {
+                    "enum": [0,1,'0','1']
                 }
             },
             "required":["type","save","catalogues","formats"]
@@ -93,6 +96,12 @@ cls.prototype.sync.settings = {
 cls.prototype.init = async function () {
     return {
         catalogues: Object.keys(FydtExt.catalogues),
+        is_cache: Object.keys(instance.is_cache).map(id => {
+            return {
+                id,
+                name: instance.is_cache[id]
+            }
+        }),
         formats: Object.keys(instance.formats).map(id => {
             return {
                 id,

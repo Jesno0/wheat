@@ -43,7 +43,8 @@ cls.prototype.start = async function () {
                     ? ExternalCls.downResource
                     : writeFile;
 
-    const result = await func(info.url,info.id).catch(async () => {
+    const result = await func(info.url,info.id).catch(async err => {
+        console.trace(err);
         await _this.DbFunc.ban(info);
         return false;
     });
@@ -74,7 +75,7 @@ module.exports = new cls();
 function writeFile(data,path) {
     Ut.mkdirs(Path.dirname(path));
     return new Promise((resolve,reject) => {
-        if(Fs.lstatSync(data).isFile()) {
+        if(Fs.existsSync(data) && Fs.lstatSync(data).isFile()) {
             Fs.createReadStream(data)
                 // .on('data', thuck => {console.log('req data',path,thuck)})
                 .on('error', err => {

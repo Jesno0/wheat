@@ -13,11 +13,15 @@ const Frame = require('koa2frame'),
 class cls extends Base{
     constructor () {
         super();
+        this.is_cache = {
+            "1": "1",
+            "0": "0"
+        }
         this.types = {
             check: "检测",
             update: "下载更新",
             reload: "重新下载"
-        }
+        };
     }
 }
 
@@ -31,7 +35,7 @@ cls.prototype.sync = async function (ctx) {
     if(save_path.slice(save_path.length-1) == '/')
         save_path = save_path.slice(0,save_path.length-1);
 
-    let resources = await Bornforlove.getResourceList(body.catalogues,save_path,parseInt(body.cache)),
+    let resources = await Bornforlove.getResourceList(body.catalogues,save_path,parseInt(body.is_cache)),
         list = await Bornforlove.check(resources,type=='reload');
 
     switch (type) {
@@ -68,7 +72,7 @@ cls.prototype.sync.settings = {
                     "type": "string",
                     "enum": Object.keys(instance.types)
                 },
-                "cache": {
+                "is_cache": {
                     "enum": [0,1,'0','1']
                 }
             },
@@ -80,10 +84,10 @@ cls.prototype.sync.settings = {
 cls.prototype.init = async function () {
     return {
         catalogues: Object.keys(BornforloveExt.catalogues),
-        formats: Object.keys(instance.formats).map(id => {
+        is_cache: Object.keys(instance.is_cache).map(id => {
             return {
                 id,
-                name: instance.formats[id]
+                name: instance.is_cache[id]
             }
         }),
         types: Object.keys(instance.types).map(id => {
