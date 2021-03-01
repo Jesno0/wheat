@@ -3,6 +3,9 @@
         <el-menu-item index="/fydt">
             <span slot="title"><i class="el-icon-bangzhu"/>FYDT</span>
         </el-menu-item>
+        <el-menu-item index="/interpretation">
+            <span slot="title"><i class="el-icon-picture"/>述经</span>
+        </el-menu-item>
         <el-menu-item index="/book">
             <span slot="title"><i class="el-icon-notebook-2"/>书本</span>
         </el-menu-item>
@@ -10,7 +13,7 @@
             <span slot="title"><i class="el-icon-mic"/>故事</span>
         </el-menu-item>
         <el-menu-item index="/file">
-            <span slot="title"><i class="el-icon-document"/>文件</span>
+            <span slot="title"><i class="el-icon-document-copy"/>文件</span>
         </el-menu-item>
         <el-submenu index="/compress" disabled>
             <template slot="title"><i class="el-icon-document-copy"/>加解密</template>
@@ -21,7 +24,7 @@
             <span slot="title"><i class="el-icon-finished"/>任务</span>
         </el-menu-item>
         <el-menu-item index="/timeline">
-            <span slot="title"><i class="el-icon-s-custom"/>时间线</span>
+            <span slot="title"><i class="el-icon-time"/>时间线</span>
         </el-menu-item>
         <el-menu-item index="/genealogy">
             <span slot="title"><i class="el-icon-s-custom"/>族谱</span>

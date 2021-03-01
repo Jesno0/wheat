@@ -21,7 +21,7 @@
                     <el-checkbox v-for="fm in init_data.formats" :label="fm.id" :key="fm.id">{{fm.name}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="保留子文件夹"  v-if="isIsDir" prop="is_dir">
+            <el-form-item label="保留子文件夹" v-if="isIsDir" prop="is_dir">
                 <el-radio-group v-model="form.is_dir">
                     <el-radio label="1" key="1">是</el-radio>
                     <el-radio label="0" key="0">否</el-radio>
@@ -35,6 +35,12 @@
             <el-form-item label="排序类型" v-if="isSortType" prop="sort_type">
                 <el-radio-group v-model="form.sort_type">
                     <el-radio v-for="sort_type in init_data.sort_types" :label="sort_type.id" :key="sort_type.id">{{sort_type.name}}</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="缓存" v-if="isCache" prop="is_cache">
+                <el-radio-group v-model="form.is_cache">
+                    <el-radio label="1" key="1">是</el-radio>
+                    <el-radio label="0" key="0">否</el-radio>
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="操作" prop="type">
@@ -75,6 +81,7 @@
                 isUrl: false,
                 isSort: false,
                 isSortType: false,
+                isCache: false,
                 cataloguesCheckAll: true,
                 cataloguesIsIndeterminate: false,
                 formatsCheckAll: true,
@@ -87,7 +94,8 @@
                     url: '',
                     is_dir: "1",
                     sort: '',
-                    sort_type: ''
+                    sort_type: '',
+                    is_cache: "1"
                 },
                 rules: {
                     save: [
@@ -102,6 +110,9 @@
                     ],
                     is_dir: [
                         {required: true, message: '请选择是否保留子文件夹', trigger: 'change'}
+                    ],
+                    is_cache: [
+                        {required: true, message: '请选择是否使用缓存', trigger: 'change'}
                     ],
                     formats: [
                         {type: 'array', required: true, message: '请至少选择一种文件类型', trigger: 'change'}
@@ -131,6 +142,8 @@
                 this.form.formats = init_data.formats ? init_data.formats.map(item => {return item.id}) : undefined;
                 this.isIsDir = Boolean(init_data.is_dir || init_data.is_dir === 0);
                 this.form.is_dir = this.isIsDir ? init_data.is_dir : undefined;
+                this.isCache = Boolean(init_data.is_cache || init_data.is_cache === 0);
+                this.form.is_cache = this.isCache ? init_data.is_cache : undefined;
                 this.isShowForm = true;
             },
             submit: function (opts) {

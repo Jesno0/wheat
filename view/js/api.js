@@ -31,6 +31,12 @@ const ApiAiShenInit = function () {
 const ApiAiShenSync = function (opts) {
     return request('post',`/aishen/sync`,opts);
 };
+const ApiBornforloveInit = function () {
+    return request('get',`/bornforlove/init`);
+};
+const ApiBornforloveSync = function (opts) {
+    return request('post',`/bornforlove/sync`,opts);
+};
 const ApiStoryInit = function () {
     return request('get',`/story/init`);
 };
@@ -70,6 +76,8 @@ export {
     ApiFydtSync,
     ApiAiShenInit,
     ApiAiShenSync,
+    ApiBornforloveInit,
+    ApiBornforloveSync,
     ApiStoryInit,
     ApiStorySync,
     ApiFileInit,

@@ -19,6 +19,7 @@
   import VueRouter from 'vue-router'
   import MainMenu from './components/MainMenu.vue'
   import Fydt from './components/Fydt.vue'
+  import Interpretation from './components/Interpretation.vue'
   import Story from './components/Story.vue'
   import File from './components/File.vue'
   import Book from './components/Book.vue'
@@ -37,6 +38,7 @@
       routes: [
         {path: '/',redirect: '/fydt'},
         {path: '/fydt', component: Fydt},
+        {path: '/interpretation', component: Interpretation},
         {path: '/book', component: Book},
         {path: '/story', component: Story},
         {path: '/compress', component: Story},

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2391c92a-43f0-4857-9b7a-9fb38053d74d",
+		"_postman_id": "e12943c9-1d95-4945-9840-00dba8f8819d",
 		"name": "wheat",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -88,13 +88,14 @@
 									"key": "formats",
 									"value": "audio",
 									"type": "text"
+								},
+								{
+									"key": "is_cache",
+									"value": "0",
+									"type": "text",
+									"disabled": true
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": "{{host-wheat}}/fydt/sync"
 					},
@@ -139,7 +140,7 @@
 							"formdata": [
 								{
 									"key": "save",
-									"value": "F:/1_back/mine/bible/book/aishen",
+									"value": "D:\\back\\mine\\bible\\资料\\bible",
 									"type": "text"
 								},
 								{
@@ -182,13 +183,14 @@
 									"key": "formats",
 									"value": "pdf",
 									"type": "text"
+								},
+								{
+									"key": "is_cache",
+									"value": "0",
+									"type": "text",
+									"disabled": true
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": "{{host-wheat}}/aishen/sync"
 					},
@@ -208,6 +210,77 @@
 							}
 						],
 						"url": "{{host-wheat}}/aishen/init"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bornforlove",
+			"item": [
+				{
+					"name": "sync",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "save",
+									"value": "D:\\back\\mine\\bible\\资料\\bornforlove",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "动画述经",
+									"type": "text"
+								},
+								{
+									"key": "catalogues",
+									"value": "图表述经",
+									"description": "图表",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "check",
+									"description": "check,update,reload",
+									"type": "text"
+								},
+								{
+									"key": "cache",
+									"value": "0",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": "{{host-wheat}}/bornforlove/sync"
+					},
+					"response": []
+				},
+				{
+					"name": "init",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded",
+								"disabled": true
+							}
+						],
+						"url": "{{host-wheat}}/bornforlove/init"
 					},
 					"response": []
 				}
@@ -238,7 +311,7 @@
 								},
 								{
 									"key": "save",
-									"value": "F:\\1_back\\mine\\cx-story",
+									"value": "D:\\back\\mine\\cx-story",
 									"type": "text"
 								},
 								{
@@ -247,12 +320,7 @@
 									"description": "check,relaod,update",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": "{{host-wheat}}/story/sync"
 					},
@@ -304,13 +372,13 @@
 									"value": "audio",
 									"description": "doc,audio,video,other",
 									"type": "text"
+								},
+								{
+									"key": "formats",
+									"value": "doc",
+									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": "{{host-wheat}}/file/sync"
 					},
@@ -361,12 +429,7 @@
 									"type": "text",
 									"disabled": true
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{host-wheat}}/file/catalogue?url=D:\\back\\mine\\bible\\poetry\\other&type=update&sort=birthtimeMs",
@@ -528,7 +591,22 @@
 								"value": "application/json"
 							}
 						],
-						"url": "{{host-wheat}}/task/stop"
+						"url": {
+							"raw": "{{host-wheat}}/task/remove?id=格林童话",
+							"host": [
+								"{{host-wheat}}"
+							],
+							"path": [
+								"task",
+								"remove"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "格林童话"
+								}
+							]
+						}
 					},
 					"response": []
 				},

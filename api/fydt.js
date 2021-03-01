@@ -13,10 +13,6 @@ const Frame = require('koa2frame'),
 class cls extends Base{
     constructor () {
         super();
-        this.is_cache = {
-            "1": "1",
-            "0": "0"
-        }
         this.formats = {
             doc: "文档",
             audio: "音频"
@@ -96,12 +92,6 @@ cls.prototype.sync.settings = {
 cls.prototype.init = async function () {
     return {
         catalogues: Object.keys(FydtExt.catalogues),
-        is_cache: Object.keys(instance.is_cache).map(id => {
-            return {
-                id,
-                name: instance.is_cache[id]
-            }
-        }),
         formats: Object.keys(instance.formats).map(id => {
             return {
                 id,

@@ -34,7 +34,8 @@
             let _form = _this.$refs.form;
             ApiFydtInit().then(function (init_data) {
                 _form.init(Object.assign({
-                    save: 'D:\\fydt资料'
+                    save: 'D:\\fydt资料',
+                    is_cache: "1"
                 },init_data));
                 _result.write('初始化成功');
             }).catch(function (err) {

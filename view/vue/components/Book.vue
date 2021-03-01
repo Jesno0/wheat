@@ -34,7 +34,8 @@
             let _form = _this.$refs.form;
             ApiAiShenInit().then(function (init_data) {
                 _form.init(Object.assign({
-                    save: 'D:\\aiShen资料'
+                    save: 'D:\\aiShen资料',
+                    is_cache: "1"
                 },init_data));
                 _result.write('初始化成功');
             }).catch(function (err) {
