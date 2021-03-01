@@ -48,7 +48,7 @@ cls.prototype.check = function (resources,formats,reload) {
             url = res[1],
             save = res[0],
             ext = save.slice(save.lastIndexOf('.')+1);
-        if (['txt','pdf'].indexOf(ext) < 0) continue;
+        if (formats.indexOf(ext) < 0) continue;
 
         if (reload
             || !Fs.existsSync(save)
@@ -71,17 +71,16 @@ cls.prototype.check = function (resources,formats,reload) {
      ]
  ]
  */
-cls.prototype.getResourceList = async function (catalogues,save_path) {
-    let i,name,cat,back = [];
-    for(i=0; i< catalogues.length; i++) {
-        name = catalogues[i];
-        cat = AiShen.catalogues[name];
+cls.prototype.getResourceList = async function (catalogues,save_path,is_cache) {
+    const back = [];
+    for(let name of catalogues) {
+        const cat = AiShen.catalogues[name];
         let type_info = Object.assign({name}, cat);
-        if (type_info) back = back.concat(await circle(type_info,save_path));
+        if (type_info) back.push(...(await circle(type_info,save_path,is_cache)));
     }
     return back;
 
-    async function circle (type_info,save) {
+    async function circle (type_info,save,is_cache) {
         let urls = type_info.url;
         if(!urls) return;
         if(urls.constructor != Array) urls = [urls];
@@ -90,34 +89,38 @@ cls.prototype.getResourceList = async function (catalogues,save_path) {
         save = save || '';
         if(name) save += `/${name}`;
 
-        let type = type_info.type,
-            resources = [],
-            i, j, url, infos, info;
+        const type = type_info.type,
+            resources = [];
 
         switch (type) {
             case AiShen.types.resource_list:
                 if(!type_info.children) break;
-                for(i=0; i< urls.length; i++) {
-                    url = urls[i];
-                    infos = await AiShen[type](url);
-                    for (j = 0; j < infos.length; j++) {
-                        info = infos[j];
-                        let types = await AiShen.resource_id(info.url);
-                        await Promise.all(types.map(async (type,index) => {
-                            let file_chk = (await AiShenFile.resource_detail(type.uid,type.fid,info.cat).catch(err => {
-                                    if (err.ok == 503) return {};
-                                    return Promise.reject({info,error:err});
-                                })).file_chk,
-                                link = (await AiShenFile.file_url(type.uid,type.fid,file_chk).catch(err => {
-                                    if(err.ok == 215) return {};
-                                    return Promise.reject({info,error:err});
-                                })).downurl;
+                for(let url of urls) {
+                    const infos = await AiShen[type](url,null,is_cache);
+                    const res_infos = await circle(Object.assign({
+                        url: infos
+                    },type_info.children),save,is_cache);
+                    if(res_infos) resources.push(...res_infos);
+                }
+                return resources;
+            case AiShen.types.resource_id:
+                for(let info of urls) {
+                    const types = await AiShen[type](info.url,null,is_cache);
+                    for(let [index,type] of types.entries()) {
+                        const file_chk = (await AiShenFile.resource_detail(type.uid,type.fid,info.cat,is_cache).catch(err => {
+                            if ([503,21].includes(err.ok)) return {};
+                            return Promise.reject({info,error:err});
+                        })).file_chk;
+                        if(!file_chk) continue;
+                        const link = (await AiShenFile.file_url(type.uid,type.fid,file_chk,is_cache).catch(err => {
+                            if ([503,215,21].includes(err.ok)) return {};
+                                return Promise.reject({info,error:err});
+                            })).downurl;
 
-                            if(link) resources.push([
-                                `${save}/${info.cat}/${Ut.fixFileName(info.name)}-${Ut.fixFileName(info.auth)}.${index?'pdf':'txt'}`,
-                                link
-                            ]);
-                        }));
+                        if(link) resources.push([
+                            `${save}/${info.cat}/${Ut.fixFileName(info.name)}-${Ut.fixFileName(info.auth)}.${index?'pdf':'txt'}`,
+                            link
+                        ]);
                     }
                 }
                 return resources;

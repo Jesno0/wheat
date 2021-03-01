@@ -42,18 +42,15 @@ class cls extends Base {
                 children: {
                     type: this.types.resource_id
                 }
-            },"热门书籍": {
-                type: this.types.resource_list,
-                url: '5000',
-                children: {
-                    type: this.types.resource_id
-                }
             }
         };
     }
 
     async request(method,api,info,back_format,err_msg) {
-        let back = await super.request(method, api, info, back_format, err_msg, ['1', 200]);
+        let back = await super.request(method, api, info, back_format, err_msg).catch(err => {
+            if(err && ['1',200].includes(err.ok)) return err.data;
+            else return Promise.reject(err);
+        });
         if(!back) return Promise.reject(Err.get(Err.parameter_error,{method,api,info}));
         return back;
     }
@@ -70,7 +67,10 @@ cls.prototype.resource_list = async function (par_id,cls_id,is_cache) {
         while(page_num < page_count) {
             let data = await _this.request('post',url,{
                 headers: {
-                    Cookie:'JSESSIONID=abcSM7nQLWxVYgndHOVex; COOKIE_IS_ENABLED_COOKIE=abcSM7nQLWxVYgndHOVex; '
+                    Host: 'www.aishen360.com',
+                    'User-Agent': 'PostmanRuntime/7.26.10',
+                    Cookie:'JSESSIONID=abcSM7nQLWxVYgndHOVex; COOKIE_IS_ENABLED_COOKIE=abcSM7nQLWxVYgndHOVex;',
+                    'Content-Type':'application/x-www-form-urlencoded'
                 },
                 query: {
                     method: 'getBookListCommon'
@@ -80,15 +80,12 @@ cls.prototype.resource_list = async function (par_id,cls_id,is_cache) {
                     cls_id,
                     page_num
                 }
-            }).catch(result => {
-                if(result.ok == '1') return result.data;
-                return Promise.reject(result);
             });
 
             if(!data.records) console.log(data,par_id,page_num);
-            back = back.concat(data.records
-                .filter(function(item) {
-                    return item.state == 'Completed'
+            back.push(...(data.records
+                .filter(item => {
+                    return ['已完结','Completed'].includes(item.state)
                 }).map(item => {
                     return {
                         name: item.bName,
@@ -96,7 +93,7 @@ cls.prototype.resource_list = async function (par_id,cls_id,is_cache) {
                         url: item.bUrl,
                         cat: item.cat
                     }
-                }));
+                })));
             if(page_num == 0) page_count = data.pageNum;
             page_num ++;
         }
@@ -108,8 +105,13 @@ cls.prototype.resource_list = async function (par_id,cls_id,is_cache) {
 cls.prototype.resource_id = async function (url,is_cache) {
     url = `/download/${url}.html`;
     const _this = this;
-    return this.orCache(is_cache, url, null, async function() {
-        let html = await _this.get(url, null, 'html');
+    return this.orCache(is_cache, `resourse_id::${url}`, null, async function() {
+        const html = await _this.request('get', url, {
+            headers: {
+                Host: 'www.aishen360.com',
+                'User-Agent': 'PostmanRuntime/7.26.10'
+            }
+        }, 'html');
         return html.split('/file/').slice(1,3).map(item => {
             let arr = item.slice(0,item.indexOf('"')).split('-');
             return {

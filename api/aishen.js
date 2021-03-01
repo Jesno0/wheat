@@ -13,6 +13,10 @@ const Frame = require('koa2frame'),
 class cls extends Base{
     constructor () {
         super();
+        this.is_cache = {
+            "1": "1",
+            "0": "0"
+        }
         this.formats = {
             txt: "txt",
             pdf: "pdf"
@@ -36,7 +40,7 @@ cls.prototype.sync = async function (ctx) {
     if(save_path.slice(save_path.length-1) == '/')
         save_path = save_path.slice(0,save_path.length-1);
 
-    let resources = await AiShen.getResourceList(body.catalogues,save_path),
+    let resources = await AiShen.getResourceList(body.catalogues,save_path,parseInt(body.is_cache)),
         list = await AiShen.check(resources,formats,type=='reload');
 
     switch (type) {
@@ -79,6 +83,9 @@ cls.prototype.sync.settings = {
                         "type": "string",
                         "enum": Object.keys(instance.formats)
                     }
+                },
+                "is_cache": {
+                    "enum": [0,1,'0','1']
                 }
             },
             "required":["type","save","catalogues","formats"]
@@ -89,6 +96,12 @@ cls.prototype.sync.settings = {
 cls.prototype.init = async function () {
     return {
         catalogues: Object.keys(AiShenExt.catalogues),
+        is_cache: Object.keys(instance.is_cache).map(id => {
+            return {
+                id,
+                name: instance.is_cache[id]
+            }
+        }),
         formats: Object.keys(instance.formats).map(id => {
             return {
                 id,
