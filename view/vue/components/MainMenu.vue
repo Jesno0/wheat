@@ -6,6 +6,9 @@
         <el-menu-item index="/interpretation">
             <span slot="title"><i class="el-icon-picture"/>述经</span>
         </el-menu-item>
+        <el-menu-item index="/note">
+            <span slot="title"><i class="el-icon-edit-outline"/>笔记</span>
+        </el-menu-item>
         <el-menu-item index="/book">
             <span slot="title"><i class="el-icon-notebook-2"/>书本</span>
         </el-menu-item>

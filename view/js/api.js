@@ -37,6 +37,12 @@ const ApiBornforloveInit = function () {
 const ApiBornforloveSync = function (opts) {
     return request('post',`/bornforlove/sync`,opts);
 };
+const ApiWdbibleInit = function () {
+    return request('get',`/wdbible/init`);
+};
+const ApiWdbibleSync = function (opts) {
+    return request('post',`/wdbible/sync`,opts);
+};
 const ApiStoryInit = function () {
     return request('get',`/story/init`);
 };
@@ -78,6 +84,8 @@ export {
     ApiAiShenSync,
     ApiBornforloveInit,
     ApiBornforloveSync,
+    ApiWdbibleInit,
+    ApiWdbibleSync,
     ApiStoryInit,
     ApiStorySync,
     ApiFileInit,

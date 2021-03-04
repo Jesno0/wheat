@@ -42,6 +42,11 @@ module.exports = {
             url_bak: 'http://mp.weixin.qq.com',
             cache: true
         },
+        wdbible: {
+            url: 'https://wd.bible',
+            url_bak: '',
+            cache: true
+        },
         baiduFile: {
             url: 'https://wenku.baidu.com',
             cache: true

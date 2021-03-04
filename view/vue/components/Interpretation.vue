@@ -26,7 +26,7 @@
     import Result from './common/Result.vue'
 
     export default {
-        name: 'Book',
+        name: 'Interpretation',
         data () {
             return {
             }

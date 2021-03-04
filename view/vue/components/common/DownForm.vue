@@ -37,6 +37,11 @@
                     <el-radio v-for="sort_type in init_data.sort_types" :label="sort_type.id" :key="sort_type.id">{{sort_type.name}}</el-radio>
                 </el-radio-group>
             </el-form-item>
+            <el-form-item label="用户信息" v-if="isCookie" prop="cookie">
+                <el-input v-model="form.cookie"
+                          placeholder="请原网址登陆后，按F12，将cookie复制在此处">
+                </el-input>
+            </el-form-item>
             <el-form-item label="缓存" v-if="isCache" prop="is_cache">
                 <el-radio-group v-model="form.is_cache">
                     <el-radio label="1" key="1">是</el-radio>
@@ -82,6 +87,7 @@
                 isSort: false,
                 isSortType: false,
                 isCache: false,
+                isCookie: false,
                 cataloguesCheckAll: true,
                 cataloguesIsIndeterminate: false,
                 formatsCheckAll: true,
@@ -95,6 +101,7 @@
                     is_dir: "1",
                     sort: '',
                     sort_type: '',
+                    cookie: '',
                     is_cache: "1"
                 },
                 rules: {
@@ -120,6 +127,10 @@
                     url: [
                         {required: true, message: '网页地址，不能空', trigger: 'blur'},
                         {min: 11, message: '网页地址不正确', trigger: 'blur'}
+                    ],
+                    cookie: [
+                        {required: true, message: '用户信息，不能空', trigger: 'blur'},
+                        {min: 11, message: '用户信息不正确', trigger: 'blur'}
                     ]
                 }
             }
@@ -144,6 +155,7 @@
                 this.form.is_dir = this.isIsDir ? init_data.is_dir : undefined;
                 this.isCache = Boolean(init_data.is_cache || init_data.is_cache === 0);
                 this.form.is_cache = this.isCache ? init_data.is_cache : undefined;
+                this.isCookie = Boolean(init_data.is_cookie || init_data.is_cookie === '');
                 this.isShowForm = true;
             },
             submit: function (opts) {

@@ -11,9 +11,9 @@
 
 # files #
 ######################
-/node_modules
-package-lock.json
+/node_modules/
 *.log
 .nyc_output
 /db/json/queue.json
-/out
+/out/
+/view/cache/wdbible/

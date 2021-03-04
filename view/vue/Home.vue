@@ -29,6 +29,7 @@
   import Poetry from './components/Poetry.vue'
   import Movie from './components/Movie.vue'
   import Introduce from './components/Introduce.vue'
+  import Note from './components/Note.vue'
 
   export default {
     components: {
@@ -48,7 +49,8 @@
         {path: '/genealogy', component: Genealogy},
         {path: '/poetry', component: Poetry},
         {path: '/movie', component: Movie},
-        {path: '/introduce', component: Introduce}
+        {path: '/introduce', component: Introduce},
+        {path: '/note', component: Note}
       ]
     })
   }
